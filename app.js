@@ -23,6 +23,7 @@
     views.forEach(function (view) {
       view.classList.toggle("is-active", view.id === name + "View");
     });
+    document.body.dataset.view = name;
     window.scrollTo(0, 0);
     document.getElementById("app").focus({ preventScroll: true });
   }
@@ -117,13 +118,20 @@
   }
 
   function renderResult(cat) {
-    document.getElementById("resultType").textContent = cat.type;
+    var resultType = document.getElementById("resultType");
+    var resultImage = document.getElementById("resultImage");
+
+    resultType.textContent = cat.type;
+    resultType.dataset.length = cat.type.length;
     document.getElementById("resultTitle").textContent = cat.title;
-    document.getElementById("resultImage").src = cat.image;
-    document.getElementById("resultImage").alt = cat.name + "，" + cat.title;
+    resultImage.src = cat.image;
+    resultImage.alt = cat.name + "，" + cat.title;
+    resultImage.style.objectFit = cat.imageFit || "cover";
     document.getElementById("resultStamp").textContent = cat.type;
     document.getElementById("resultCatName").textContent = cat.name;
-    document.getElementById("resultDescription").textContent = cat.introduction;
+    document.getElementById("resultMbti").textContent = "MBTI 参考型 · " + cat.mbti;
+    document.getElementById("resultBiography").textContent = cat.biography;
+    document.getElementById("resultPersonality").textContent = cat.personality;
     document.getElementById("resultKeywords").innerHTML = cat.keywords.map(function (word) { return "<span>" + word + "</span>"; }).join("");
     document.getElementById("resultQuote").textContent = cat.quote;
     showView("result");
@@ -132,8 +140,8 @@
   function renderGallery() {
     document.getElementById("catGrid").innerHTML = config.cats.map(function (cat, index) {
       return '<button class="cat-card" type="button" data-cat-index="' + index + '" aria-label="查看' + cat.name + '的资料">' +
-        '<span class="card-image"><img src="' + cat.image + '" alt="' + cat.name + '" loading="lazy"><i>' + cat.type + "</i></span>" +
-        '<span class="card-copy"><small>' + cat.title + "</small><strong>" + cat.name + '</strong><span class="card-arrow" aria-hidden="true">↗</span></span>' +
+        '<span class="card-image"><img src="' + cat.image + '" alt="' + cat.name + '" loading="lazy" style="object-fit:' + (cat.imageFit || "cover") + '"><i>' + cat.type + "</i></span>" +
+        '<span class="card-copy"><small>' + cat.mbti + " · " + cat.title + "</small><strong>" + cat.name + '<span class="card-arrow" aria-hidden="true">↗</span></strong></span>' +
         "</button>";
     }).join("");
   }
@@ -141,8 +149,10 @@
   function openCatDialog(index) {
     var cat = config.cats[index];
     document.getElementById("dialogContent").innerHTML =
-      '<div class="dialog-image"><img src="' + cat.image + '" alt="' + cat.name + '"><span>' + cat.type + "</span></div>" +
-      '<div class="dialog-copy"><small>' + cat.type + " · " + cat.title + "</small><h3>" + cat.name + "</h3><p>" + cat.introduction + "</p>" +
+      '<div class="dialog-image"><img src="' + cat.image + '" alt="' + cat.name + '" style="object-fit:' + (cat.imageFit || "cover") + '"><span>' + cat.type + "</span></div>" +
+      '<div class="dialog-copy"><small>' + cat.mbti + " · " + cat.title + "</small><h3>" + cat.name + "</h3>" +
+      '<section><h4>猫咪小传</h4><p>' + cat.biography + "</p></section>" +
+      '<section><h4>你可能是</h4><p>' + cat.personality + "</p></section>" +
       '<div class="keyword-list">' + cat.keywords.map(function (word) { return "<span>" + word + "</span>"; }).join("") + "</div></div>";
     document.getElementById("catDialog").showModal();
   }
@@ -154,6 +164,11 @@
   fillConfiguredContent();
   renderFacts();
   renderGallery();
+  document.body.dataset.view = "home";
+
+  var previewType = new URLSearchParams(window.location.search).get("result");
+  var previewCat = config.cats.find(function (cat) { return cat.type === previewType; });
+  if (previewCat) renderResult(previewCat);
 
   document.getElementById("startButton").addEventListener("click", function () { startTest(true); });
   document.getElementById("showCatsButton").addEventListener("click", function () { showView("gallery"); });

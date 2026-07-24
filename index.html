@@ -84,9 +84,19 @@
             <span class="type-stamp" id="resultStamp"></span>
           </div>
           <div class="result-copy">
-            <div class="cat-name-line"><span data-content="site.yourCatLabel"></span><strong id="resultCatName"></strong></div>
-            <p class="result-description" id="resultDescription"></p>
-            <div class="keyword-list" id="resultKeywords"></div>
+            <div class="cat-identity">
+              <div class="cat-name-line"><span data-content="site.yourCatLabel"></span><strong id="resultCatName"></strong></div>
+              <span class="mbti-badge" id="resultMbti"></span>
+            </div>
+            <section class="result-story" aria-labelledby="catStoryTitle">
+              <h3 id="catStoryTitle">猫咪小传</h3>
+              <p id="resultBiography"></p>
+            </section>
+            <section class="result-personality" aria-labelledby="personalityTitle">
+              <h3 id="personalityTitle">你可能是</h3>
+              <p id="resultPersonality"></p>
+            </section>
+            <div class="keyword-list" id="resultKeywords" aria-label="性格关键词"></div>
             <blockquote id="resultQuote"></blockquote>
           </div>
         </div>
