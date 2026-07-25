@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#fffaf0">
-  <meta name="description" content="CATBTI 校园猫人格测试">
-  <title>CATBTI · 校园猫人格测试</title>
+  <meta name="description" content="CATBTI HBUT 校园猫格测试">
+  <title>CATBTI · HBUT 校园猫格测试</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='24' font-size='24'%3E%F0%9F%90%BE%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -27,8 +27,9 @@
     <section class="view home-view is-active" id="homeView" aria-labelledby="homeTitle">
       <div class="hero-copy">
         <div class="eyebrow"><span class="mini-paw" aria-hidden="true">●</span><span data-content="site.eyebrow"></span></div>
-        <h1 id="homeTitle"><span data-content="site.name"></span><small data-content="site.subtitle"></small></h1>
+        <h1 id="homeTitle"><span data-content="site.name"></span></h1>
         <p class="hero-intro" data-content="site.intro"></p>
+        <div class="hero-doodles" aria-hidden="true"><span>♡</span><span>ฅ</span><span>✦</span><span>ฅ</span></div>
         <div class="hero-actions">
           <button class="button button-primary" id="startButton" type="button">
             <span data-content="site.startButton"></span>
@@ -38,18 +39,14 @@
         </div>
         <div class="quick-facts" id="quickFacts"></div>
       </div>
-      <div class="hero-visual" aria-hidden="true">
-        <div class="sun-disc"></div>
-        <div class="hero-cat">
-          <div class="hero-ear hero-ear-left"></div><div class="hero-ear hero-ear-right"></div>
-          <div class="hero-head"><i class="eye eye-left"></i><i class="eye eye-right"></i><i class="nose"></i><i class="mouth"></i></div>
-          <div class="hero-body"><span class="stripe s1"></span><span class="stripe s2"></span></div>
-          <div class="hero-tail"></div>
+      <div class="hero-visual">
+        <div class="hero-cover-frame">
+          <img src="images/updated-cats/cover.png" alt="四只 HBUT 校园猫咪的可爱合照插画">
+          <span class="cover-sticker" aria-hidden="true">HBUT<br>CAT CLUB</span>
         </div>
-        <span class="float-fish">&lt;°)))彡</span>
-        <span class="float-paw paw-a">●</span>
-        <span class="float-paw paw-b">●</span>
-        <div class="campus-line"></div>
+        <span class="cover-spark cover-spark-one" aria-hidden="true">✦</span>
+        <span class="cover-spark cover-spark-two" aria-hidden="true">♡</span>
+        <span class="cover-spark cover-spark-three" aria-hidden="true">✿</span>
       </div>
     </section>
 
@@ -58,11 +55,14 @@
         <div class="test-topline">
           <button class="back-button" id="testBackButton" type="button" aria-label="返回上一题" title="返回上一题">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+            <span>上一题</span>
           </button>
           <div class="progress-copy"><span id="progressLabel"></span><strong id="progressPercent"></strong></div>
         </div>
         <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
         <article class="question-panel" id="questionPanel">
+          <span class="question-paw paw-print-one" aria-hidden="true">ฅ</span>
+          <span class="question-paw paw-print-two" aria-hidden="true">♡</span>
           <div class="question-number" id="questionNumber"></div>
           <h2 id="questionTitle"></h2>
           <p id="questionHint"></p>
@@ -73,18 +73,39 @@
     </section>
 
     <section class="view result-view" id="resultView" aria-labelledby="resultType">
-      <div class="result-shell">
-        <div class="result-heading">
-          <span class="eyebrow" data-content="site.resultEyebrow"></span>
-          <h2 id="resultType"></h2>
-          <p id="resultTitle"></p>
+      <div class="receipt-scene" id="receiptScene">
+        <div class="receipt-printer" aria-hidden="true">
+          <span class="printer-light"></span>
+          <span class="printer-status">CATBTI PRINT LAB</span>
+          <span class="printer-slot"></span>
         </div>
+        <div class="receipt-feed" id="receiptFeed">
+          <article class="result-shell" id="resultReceipt">
+            <div class="result-heading">
+              <span class="receipt-label">HBUT CAMPUS CAT RECEIPT</span>
+              <span class="eyebrow" data-content="site.resultEyebrow"></span>
+              <h2 id="resultType"></h2>
+              <p id="resultTitle"></p>
+            </div>
+            <div class="receipt-meta">
+              <span>ISSUED BY<strong>喵栖梧猫德 class</strong></span>
+              <span>RESULT NO.<strong id="receiptNumber"></strong></span>
+            </div>
         <div class="result-layout">
           <div class="result-portrait-wrap">
-            <img id="resultImage" src="" alt="">
+            <div class="result-photo-stage">
+              <div class="result-photo-track" id="resultPhotoTrack" aria-live="polite"></div>
+              <button class="photo-nav photo-prev" id="photoPrev" type="button" aria-label="上一张猫咪照片" title="上一张">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+              </button>
+              <button class="photo-nav photo-next" id="photoNext" type="button" aria-label="下一张猫咪照片" title="下一张">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+              </button>
+            </div>
+            <div class="photo-pagination" id="photoPagination" aria-label="照片页码"></div>
             <span class="type-stamp" id="resultStamp"></span>
             <div class="dazuo-surprise" id="dazuoSurprise" aria-hidden="true">
-              <button class="surprise-start" id="dazuoSurpriseStart" type="button" aria-label="打开正在轻轻晃动的大佐礼盒"></button>
+              <button class="surprise-start" id="dazuoSurpriseStart" type="button" aria-label="打开正在轻轻晃动的大佐礼盒"><span>拆开礼物</span></button>
               <div class="surprise-glow"></div>
               <div class="jumping-dazuo" aria-hidden="true">
                 <img src="images/gent-dazuo.png" alt="">
@@ -116,6 +137,7 @@
               <div class="cat-name-line"><span data-content="site.yourCatLabel"></span><strong id="resultCatName"></strong></div>
               <span class="mbti-badge" id="resultMbti"></span>
             </div>
+            <blockquote class="result-signature" id="resultQuote"></blockquote>
             <section class="result-story" aria-labelledby="catStoryTitle">
               <h3 id="catStoryTitle">猫咪小传</h3>
               <p id="resultBiography"></p>
@@ -125,15 +147,53 @@
               <p id="resultPersonality"></p>
             </section>
             <div class="keyword-list" id="resultKeywords" aria-label="性格关键词"></div>
-            <blockquote id="resultQuote"></blockquote>
           </div>
         </div>
         <div class="claim-notice"><span class="notice-paw" aria-hidden="true">●</span><p data-content="site.claimNotice"></p></div>
+            <div class="receipt-barcode" aria-hidden="true"><span></span></div>
+            <p class="receipt-code" id="receiptCode"></p>
+          </article>
+        </div>
         <div class="result-actions">
           <button class="button button-primary" id="retryButton" type="button" data-content="site.retryButton"></button>
           <button class="button button-secondary" id="resultGalleryButton" type="button" data-content="site.galleryButton"></button>
         </div>
       </div>
+        <section class="community-panel" aria-labelledby="communityTitle">
+          <div class="thanks-cat-crowd" aria-hidden="true">
+            <span class="thanks-cat thanks-cat-one"><i></i><b></b></span>
+            <span class="thanks-cat thanks-cat-two"><i></i><b></b></span>
+            <span class="thanks-cat thanks-cat-three"><i></i><b></b></span>
+            <span class="thanks-cat thanks-cat-four"><i></i><b></b></span>
+            <span class="thanks-cat thanks-cat-five"><i></i><b></b></span>
+          </div>
+          <div class="community-heading">
+            <span class="community-kicker">THANKS, CATS &amp; CONNECTIONS</span>
+            <h3 id="communityTitle">一起继续关心校园里的小猫</h3>
+            <p class="thanks-note">在此鸣谢机关枪、佐佐咪、淼淼，以及所有猫协工作人员。</p>
+          </div>
+          <div class="community-grid">
+            <div class="community-item group-contact">
+              <span class="community-icon" aria-hidden="true">ฅ</span>
+              <div>
+                <h4>加入猫咪讨论</h4>
+                <p>如果你想和大家讨论校园的小猫，你可以加入</p>
+                <div class="group-number"><span aria-hidden="true">👉</span><strong>2272831241</strong></div>
+              </div>
+            </div>
+            <div class="community-item public-account">
+              <div class="qr-wrap"><img src="images/updated-cats/public-account-qr.jpg" alt="喵栖梧猫德 class 公众号二维码"></div>
+              <div>
+                <h4>关注微信公众号</h4>
+                <p>如果你想了解更多 HBUT 在编小猫和故事，欢迎关注公众号</p>
+                <span class="qr-pointer" aria-hidden="true">👈 扫码看看</span>
+              </div>
+            </div>
+          </div>
+          <p class="recruitment-note">如果您的救助理念与猫协一致，且有充足的时间关注群消息、投入校园小猫 NTR/救助工作，有意愿加入内部猫协，欢迎查看群内打工人招新公告呀！</p>
+          <span class="community-doodle community-doodle-one" aria-hidden="true">✦</span>
+          <span class="community-doodle community-doodle-two" aria-hidden="true">♡</span>
+        </section>
     </section>
 
     <section class="view gallery-view" id="galleryView" aria-labelledby="galleryTitle">

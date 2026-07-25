@@ -8,20 +8,20 @@ window.CATBTI_CONFIG = {
     name: "CATBTI",
     shortName: "CATBTI",
     eyebrow: "HBUT CAMPUS CAT PERSONALITY TEST",
-    subtitle: "16 种猫格，遇见你的校园猫搭子",
-    intro: "回答 16 道轻松小题，看看你的性格最像湖工哪一只校园猫。",
+    subtitle: "",
+    intro: "你最像HBUT哪只咪",
     startButton: "开始寻找我的猫格",
     galleryButton: "查看全部猫咪",
-    facts: ["16 种猫格", "16 道题", "约 3 分钟"],
+    facts: ["16 种猫格", "20 道题", "约 4 分钟"],
     testNote: "跟随第一直觉作答，就会遇见最像你的那只猫。",
     resultEyebrow: "你的 CATBTI 测试结果",
     yourCatLabel: "你的校园猫搭子",
-    claimNotice: "请向活动工作人员展示本页面，领取对应猫咪人格卡。",
+    claimNotice: "欢迎凭此页面至摊位上领取猫格卡",
     retryButton: "重新测试",
     galleryEyebrow: "CATBTI CAT ATLAS",
     galleryTitle: "认识全部 16 只校园猫",
     galleryIntro: "每一种猫格都有自己的生活方式。点击猫咪，看看它的故事和对应性格。",
-    footer: "CATBTI · 喵栖梧猫德 class × HBUT 校园猫咪人格测试"
+    footer: "CATBTI · 喵栖梧猫德 class × HBUT 校园猫格测试"
   },
 
   /*
@@ -37,19 +37,19 @@ window.CATBTI_CONFIG = {
 
   questions: [
     {
-      text: "如果你的对象变成一只苍蝇，又不小心飞进了你的嘴里，你已经快咽下去了",
-      hint: "传说中你为爱甘愿被搁浅",
+      text: "猫协开放日刚开始，你走进一个几乎全是陌生人的摊位，会……",
+      hint: "桌上摆着猫格卡，旁边已经聊得很热闹。",
       options: [
-        { text: "等等！这是我对象！我要想办法救 TA！", icon: "☀", score: { Energy: 2 } },
-        { text: "……但从生理角度来说，我已经吞下去了", icon: "☁", score: { Energy: -2 } }
+        { text: "主动问起校园猫，很快加入大家的话题", icon: "sunny", score: { Energy: 2 } },
+        { text: "先安静逛一圈，熟悉以后再慢慢开口", icon: "quiet", score: { Energy: -2 } }
       ]
     },
     {
-      text: "如果你的手机突然开始替你回复消息，而且每次都比你回复得更好",
-      hint: "社交外包",
+      text: "朋友因为没能及时帮到一只小猫而很自责，你更可能先……",
+      hint: "有时陪伴和解决问题同样重要。",
       options: [
-        { text: "虽然这很棒，但亲近的人的信息我还是会亲自回复", icon: "♥", score: { Decision: 2 } },
-        { text: "欧坤呀，我也是直接撒手不管啦！", icon: "⌁", score: { Decision: -2 } }
+        { text: "陪 TA 梳理情绪，让 TA 知道这不是一个人的责任", icon: "heart", score: { Decision: 2 } },
+        { text: "复盘当时的信息，找出下次更及时的处理办法", icon: "logic", score: { Decision: -2 } }
       ]
     },
     {
@@ -77,11 +77,11 @@ window.CATBTI_CONFIG = {
       ]
     },
     {
-      text: "你更容易被以下哪个打动？",
-      hint: "每个人心里都有柔软的地方",
+      text: "看到一段校园猫被长期照顾、逐渐信任人的记录，你更容易被什么打动？",
+      hint: "同一段故事，也会留下不同的触动。",
       options: [
-        { text: "命运你假糍粑", icon: "♡", score: { Decision: 2 } },
-        { text: "大狗大狗叫叫叫", icon: "□", score: { Decision: -2 } }
+        { text: "人与猫之间一点点建立起来的感情", icon: "heart", score: { Decision: 2 } },
+        { text: "稳定照料方案最终带来的明显改善", icon: "logic", score: { Decision: -2 } }
       ]
     },
     {
@@ -163,6 +163,38 @@ window.CATBTI_CONFIG = {
         { text: "那段经历后来带给我的想法和改变", icon: "↺", score: { Perception: 2 } },
         { text: "当时真实的画面、声音和具体细节", icon: "▣", score: { Perception: -2 } }
       ]
+    },
+    {
+      text: "第一次参加校园猫志愿活动时，你更自然的状态是……",
+      hint: "大家正在分工，有人记录，有人搬物资。",
+      options: [
+        { text: "边做边和大家认识，很快找到配合节奏", icon: "sunny", score: { Energy: 2 } },
+        { text: "领好自己的任务，专心做好再和熟悉的人交流", icon: "quiet", score: { Energy: -2 } }
+      ]
+    },
+    {
+      text: "一只校园猫最近总在新的地点出现，你首先会想……",
+      hint: "它的活动路线似乎悄悄变了。",
+      options: [
+        { text: "它是不是在适应新的关系或生活环境", icon: "dream", score: { Perception: 2 } },
+        { text: "先记下时间地点，看看路线到底怎么变化", icon: "detail", score: { Perception: -2 } }
+      ]
+    },
+    {
+      text: "团队需要在两种校园猫活动方案中做决定，你会更看重……",
+      hint: "预算和时间都有限，需要一起取舍。",
+      options: [
+        { text: "参与者和工作人员是否都感到被尊重、被照顾", icon: "heart", score: { Decision: 2 } },
+        { text: "方案是否可执行、可复盘，并能高效达成目标", icon: "logic", score: { Decision: -2 } }
+      ]
+    },
+    {
+      text: "原定的校园猫拍摄计划突然遇到降雨，你会……",
+      hint: "天气变了，但今天仍然可以有新的安排。",
+      options: [
+        { text: "先看现场情况，顺势寻找新的拍摄灵感", icon: "wander", score: { Lifestyle: 2 } },
+        { text: "立即启用备选计划，重新确认时间与物品", icon: "plan", score: { Lifestyle: -2 } }
+      ]
     }
   ],
 
@@ -180,7 +212,7 @@ window.CATBTI_CONFIG = {
     ENFP: "GLOW",
     ENTP: "IDEA",
     ESTP: "QUEEN",
-    ESTJ: "FREE",
+    ESTJ: "DRINK",
     INFJ: "LAMP",
     INTJ: "GENT"
   },
@@ -192,6 +224,7 @@ window.CATBTI_CONFIG = {
       name: "蛋挞",
       title: "咪爱你",
       image: "images/real-cats/love-u-danta.webp",
+      images: ["images/updated-cats/danta.jpg", "images/real-cats/love-u-danta.webp"],
       biography: "蛋挞曾经是宿舍里的家猫，意外跑出后没能再回到原来的家，从此开始校园流浪生活。绝育后，它有了“蛋挞”这个新名字，也像得到了一次重新出发的机会。它大多数时候亲人又黏人，偶尔会突然闹点小脾气；即使一开始对青橘很不耐烦，最后还是接受了这个总来贴贴的新朋友。",
       personality: "你很会察觉气氛，也常常比别人更早发现谁今天不太开心。你愿意主动照顾关系、鼓励身边的人，相信真诚能让疏远慢慢变成亲近；只是偶尔也要记得，不必把所有人的情绪都扛在自己肩上。",
       keywords: ["真诚", "共情", "主动靠近", "重感情"],
@@ -214,6 +247,7 @@ window.CATBTI_CONFIG = {
       name: "薄荷",
       title: "盐系老头",
       image: "images/real-cats/salt-bohe.jpg",
+      images: ["images/updated-cats/bohe.jpg", "images/real-cats/salt-bohe.jpg"],
       biography: "薄荷刚出现时瘦瘦的，嗓音还有点像破锣，后来在大家的照料下逐渐长成了“大号薄荷”。到了猫生中年，它对很多事都淡淡的，只守着熟悉的竹林小路和自己的生活节奏。它曾与柠檬形影不离；柠檬离开后，薄荷有很长一段时间都是独自生活。后来它遇到了黛玉，一开始彼此不太对付，还会上演宿敌对决；可日子久了，关系也慢慢缓和起来。",
       personality: "你重视稳定、分寸和说到做到，不太喜欢被临时变化打乱节奏。你表达关心的方式可能不热闹，却会把认定的人和答应过的事牢牢记住；别人未必第一眼看懂你，但时间越久，越能发现你的可靠和长情。",
       keywords: ["稳重", "克制", "守旧情", "有边界"],
@@ -225,6 +259,7 @@ window.CATBTI_CONFIG = {
       name: "笑笑",
       title: "躺平老奶",
       image: "images/real-cats/lyfe-xiaoxiao.webp",
+      images: ["images/updated-cats/xiaoxiao.jpg", "images/real-cats/lyfe-xiaoxiao.webp"],
       biography: "笑笑很懂得怎样把日子过舒服：阳光到了就晒一会儿，想亲近时慢慢走来，累了也会毫无负担地休息。它不和世界较劲，却能以自己的松弛和人气代表校猫参加活动，为伙伴们争取猫粮和驱虫药——看似躺平，心里也装着大家。",
       personality: "你对细微的氛围和真实体验很敏感，比起宏大的计划，更在意此刻是否自在、是否忠于内心。你通常随和，不爱把观点强加给别人；但遇到真正珍惜的人和事，你也会展现安静而坚定的一面。",
       keywords: ["松弛", "温柔", "随性", "有分寸"],
@@ -247,6 +282,7 @@ window.CATBTI_CONFIG = {
       name: "蛋饼",
       title: "跑男",
       image: "images/real-cats/runer-danbing.jpg",
+      images: ["images/updated-cats/danbing.jpg", "images/real-cats/runer-danbing.jpg"],
       biography: "蛋饼是桥头那只瘦瘦小小的三花。它十分怕人，总会先替自己找好退路；就连出院那天，也因为受惊而不得不多住了一周。回到校园后，它喜欢跟着蛋挞和青橘一起活动。所谓“跑男”，不是漫无目的地跑，而是把安全距离牢牢掌握在自己手里。",
       personality: "你独立、务实，遇到具体问题时往往比讨论问题更有精神。你喜欢先观察现场，再边做边调整，不愿被繁琐规则困住；平时看着低调，关键时刻却能迅速找到最直接的解决办法。",
       keywords: ["独立", "警觉", "务实", "反应快"],
@@ -258,7 +294,8 @@ window.CATBTI_CONFIG = {
       name: "三宝",
       title: "大卡车",
       image: "images/real-cats/xxxl-sanbao.jpg",
-      biography: "三宝的存在感像一辆停得稳稳的大卡车：体格醒目，节奏却不慌不忙。它熟悉自己的地盘，也记得谁常来、谁值得靠近；很多温柔都藏在慢吞吞的动作和踏实的陪伴里。它和四喜是一对夫妻，一个稳稳守着生活的底盘，一个把方向盘握得很紧；只要三宝安稳待着，周围好像也会跟着安定下来。",
+      images: ["images/updated-cats/sanbao-1.jpg", "images/updated-cats/sanbao-2.jpg", "images/real-cats/xxxl-sanbao.jpg"],
+      biography: "三宝的存在感像一辆停得稳稳的大卡车：体格醒目，节奏却不慌不忙。它熟悉自己的地盘，也记得谁常来、谁值得靠近；很多温柔都藏在慢吞吞的动作和踏实的陪伴里。只要三宝安稳待着，周围好像也会跟着安定下来。",
       personality: "你细心、可靠，容易注意到别人没有说出口的实际需要。你不一定喜欢站在最前面，却很愿意把重要的小事接住；当关系和环境稳定下来，你会成为那个让大家放心依靠的人。",
       keywords: ["踏实", "细心", "守护", "安全感"],
       quote: "你不必用轰轰烈烈证明重要。有人想起“放心”两个字时，想到的可能就是你。"
@@ -280,6 +317,7 @@ window.CATBTI_CONFIG = {
       name: "黛玉",
       title: "怂",
       image: "images/real-cats/song-daiyu.webp",
+      images: ["images/updated-cats/daiyu-1.jpg", "images/updated-cats/daiyu-2.jpg", "images/real-cats/song-daiyu.webp"],
       biography: "黛玉对世界的动静格外敏感，风吹草动时会先退半步，安全以后才偷偷把好奇心探出来。它在社媒里既会“自愿放弃高考”，也曾和薄荷上演宿敌对决；一开始互相看不太顺眼，后来关系却渐渐好起来。表面很怂，内心戏和自己的坚持却一样不少。",
       personality: "你内心有一套很认真、很柔软的价值标准，也很容易感受到别人忽略的情绪和意味。你可能需要更多时间确认安全感，但一旦认定某件事值得，就会表现出超出想象的坚持；你的“怂”里，其实藏着谨慎和珍惜。",
       keywords: ["敏感", "理想主义", "慢热", "有韧性"],
@@ -330,15 +368,16 @@ window.CATBTI_CONFIG = {
       quote: "你让世界从“要不要”迅速变成“已经开始”。再带上一点判断，速度就会成为真正的优势。"
     },
     {
-      type: "FREE",
+      type: "DRINK",
       mbti: "ESTJ",
-      name: "四喜",
-      title: "自由总管",
-      image: "images/real-cats/free-sixi.jpg",
-      biography: "四喜脾气很冲，连吃饭都能骂骂咧咧，却也是一位极有主见的猫妈妈。它和三宝是一对夫妻：三宝像稳稳的大卡车，四喜则像方向盘上那只不肯松开的爪子。孩子们被安置到活动室后，它接受照料，却始终没有放弃对自由的打算；谋划许久，它终于在一个夜晚突破防线，回到自己选择的生活。它不是拒绝被帮助，只是一定要亲自决定归属。",
-      personality: "你务实、直接，习惯迅速确认目标，再把局面推向一个明确结果。你愿意承担责任，也很在意自己是否拥有决定权；当你把标准讲清楚，同时给别人保留选择空间，你的组织力会从“管住”变成“带好”。",
-      keywords: ["有主见", "执行力", "敢负责", "重自由"],
-      quote: "你可以接受善意，也可以保留方向盘。真正适合你的秩序，应该容得下你的选择。"
+      name: "养乐多",
+      title: "校园巡场官",
+      image: "images/updated-cats/yangleduo-1.jpg",
+      images: ["images/updated-cats/yangleduo-1.jpg", "images/updated-cats/yangleduo-2.jpg"],
+      biography: "养乐多是一只眼神清亮的小狸花。树下的枝叶、教学楼的走廊，都是它认真巡场的日常路线；面对镜头时，它常常坐得端端正正，像是在确认周围的一切是否各就各位。它不需要大张旗鼓，也会用稳定而有秩序的存在感让人记住。",
+      personality: "你务实、直接，习惯迅速确认目标，再把事情推进到明确结果。你愿意承担责任，也擅长组织资源、守住承诺；当你在清晰标准之外给不同节奏的人留一点空间，你的可靠会更有温度。",
+      keywords: ["有主见", "执行力", "可靠", "讲秩序"],
+      quote: "先把今天安排明白，再认真喝一口生活。你的笃定，会让身边的人更安心。"
     },
     {
       type: "LAMP",
