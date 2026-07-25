@@ -6,6 +6,8 @@
   var currentQuestion = 0;
   var answers = new Array(config.questions.length).fill(null);
   var transitionTimer = null;
+  var audioContext = null;
+  var surpriseTimer = null;
 
   function getByPath(object, path) {
     return path.split(".").reduce(function (value, key) { return value && value[key]; }, object);
@@ -23,6 +25,7 @@
     views.forEach(function (view) {
       view.classList.toggle("is-active", view.id === name + "View");
     });
+    document.body.dataset.view = name;
     window.scrollTo(0, 0);
     document.getElementById("app").focus({ preventScroll: true });
   }
@@ -117,23 +120,209 @@
   }
 
   function renderResult(cat) {
-    document.getElementById("resultType").textContent = cat.type;
+    var resultType = document.getElementById("resultType");
+    var resultImage = document.getElementById("resultImage");
+    var surprise = document.getElementById("dazuoSurprise");
+    var portrait = document.querySelector(".result-portrait-wrap");
+
+    resultType.textContent = cat.type;
+    resultType.dataset.length = cat.type.length;
     document.getElementById("resultTitle").textContent = cat.title;
-    document.getElementById("resultImage").src = cat.image;
-    document.getElementById("resultImage").alt = cat.name + "，" + cat.title;
+    resultImage.src = cat.image;
+    resultImage.alt = cat.name + "，" + cat.title;
+    resultImage.style.objectFit = cat.imageFit || "cover";
     document.getElementById("resultStamp").textContent = cat.type;
     document.getElementById("resultCatName").textContent = cat.name;
-    document.getElementById("resultDescription").textContent = cat.introduction;
+    document.getElementById("resultMbti").textContent = "MBTI 参考型 · " + cat.mbti;
+    document.getElementById("resultBiography").textContent = cat.biography;
+    document.getElementById("resultPersonality").textContent = cat.personality;
     document.getElementById("resultKeywords").innerHTML = cat.keywords.map(function (word) { return "<span>" + word + "</span>"; }).join("");
     document.getElementById("resultQuote").textContent = cat.quote;
+    window.clearTimeout(surpriseTimer);
+    portrait.classList.remove("is-dazuo-result", "is-awaiting-surprise", "is-playing-surprise", "is-surprise-complete");
+    surprise.classList.remove("is-active");
+    surprise.setAttribute("aria-hidden", "true");
     showView("result");
+    if (cat.type === "GENT") prepareDazuoSurprise(surprise, portrait);
+  }
+
+  function playTone(startTime, frequency, duration, type, gainLevel) {
+    var oscillator = audioContext.createOscillator();
+    var gain = audioContext.createGain();
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(frequency, startTime);
+    oscillator.frequency.exponentialRampToValueAtTime(frequency * 1.16, startTime + duration);
+    gain.gain.setValueAtTime(0.0001, startTime);
+    gain.gain.exponentialRampToValueAtTime(gainLevel, startTime + 0.018);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+    oscillator.connect(gain).connect(audioContext.destination);
+    oscillator.start(startTime);
+    oscillator.stop(startTime + duration + 0.02);
+  }
+
+  function playSoftBoom(startTime) {
+    var bufferSize = audioContext.sampleRate * 0.34;
+    var buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+    var data = buffer.getChannelData(0);
+    for (var index = 0; index < bufferSize; index += 1) {
+      var fade = 1 - index / bufferSize;
+      data[index] = (Math.random() * 2 - 1) * fade * fade * 0.32;
+    }
+    var source = audioContext.createBufferSource();
+    var filter = audioContext.createBiquadFilter();
+    var gain = audioContext.createGain();
+    source.buffer = buffer;
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(520, startTime);
+    filter.frequency.exponentialRampToValueAtTime(180, startTime + 0.34);
+    gain.gain.setValueAtTime(0.0001, startTime);
+    gain.gain.exponentialRampToValueAtTime(0.16, startTime + 0.025);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.34);
+    source.connect(filter).connect(gain).connect(audioContext.destination);
+    source.start(startTime);
+
+    var thump = audioContext.createOscillator();
+    var thumpGain = audioContext.createGain();
+    thump.type = "sine";
+    thump.frequency.setValueAtTime(118, startTime);
+    thump.frequency.exponentialRampToValueAtTime(52, startTime + 0.24);
+    thumpGain.gain.setValueAtTime(0.0001, startTime);
+    thumpGain.gain.exponentialRampToValueAtTime(0.15, startTime + 0.018);
+    thumpGain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.28);
+    thump.connect(thumpGain).connect(audioContext.destination);
+    thump.start(startTime);
+    thump.stop(startTime + 0.3);
+  }
+
+  function playGiftRattle(startTime) {
+    [0, 0.09, 0.18, 0.28, 0.39].forEach(function (offset, index) {
+      var bufferSize = Math.round(audioContext.sampleRate * 0.055);
+      var buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+      var data = buffer.getChannelData(0);
+      for (var sample = 0; sample < bufferSize; sample += 1) {
+        var fade = 1 - sample / bufferSize;
+        data[sample] = (Math.random() * 2 - 1) * fade * 0.22;
+      }
+      var source = audioContext.createBufferSource();
+      var filter = audioContext.createBiquadFilter();
+      var gain = audioContext.createGain();
+      var hitTime = startTime + offset;
+      source.buffer = buffer;
+      filter.type = "bandpass";
+      filter.frequency.setValueAtTime(720 + index * 85, hitTime);
+      filter.Q.setValueAtTime(1.4, hitTime);
+      gain.gain.setValueAtTime(0.0001, hitTime);
+      gain.gain.exponentialRampToValueAtTime(0.045, hitTime + 0.008);
+      gain.gain.exponentialRampToValueAtTime(0.0001, hitTime + 0.055);
+      source.connect(filter).connect(gain).connect(audioContext.destination);
+      source.start(hitTime);
+    });
+  }
+
+  function playMeow(startTime, basePitch, duration) {
+    var voice = audioContext.createOscillator();
+    var warmth = audioContext.createOscillator();
+    var filter = audioContext.createBiquadFilter();
+    var gain = audioContext.createGain();
+    voice.type = "triangle";
+    warmth.type = "sine";
+    voice.frequency.setValueAtTime(basePitch, startTime);
+    voice.frequency.exponentialRampToValueAtTime(basePitch * 1.55, startTime + duration * 0.35);
+    voice.frequency.exponentialRampToValueAtTime(basePitch * 0.82, startTime + duration);
+    warmth.frequency.setValueAtTime(basePitch * 0.5, startTime);
+    warmth.frequency.exponentialRampToValueAtTime(basePitch * 0.41, startTime + duration);
+    filter.type = "bandpass";
+    filter.frequency.setValueAtTime(940, startTime);
+    filter.frequency.exponentialRampToValueAtTime(690, startTime + duration);
+    filter.Q.setValueAtTime(2.3, startTime);
+    gain.gain.setValueAtTime(0.0001, startTime);
+    gain.gain.exponentialRampToValueAtTime(0.072, startTime + 0.035);
+    gain.gain.setValueAtTime(0.06, startTime + duration * 0.55);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+    voice.connect(filter);
+    warmth.connect(filter);
+    filter.connect(gain).connect(audioContext.destination);
+    voice.start(startTime);
+    warmth.start(startTime);
+    voice.stop(startTime + duration + 0.02);
+    warmth.stop(startTime + duration + 0.02);
+  }
+
+  function playDazuoSound() {
+    var AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) {
+      document.body.dataset.dazuoAudio = "unsupported";
+      return Promise.resolve(false);
+    }
+    audioContext = audioContext || new AudioContext();
+    var resume = audioContext.state === "suspended" ? audioContext.resume() : Promise.resolve();
+    return resume.then(function () {
+      if (audioContext.state !== "running") {
+        document.body.dataset.dazuoAudio = "blocked";
+        return false;
+      }
+      document.body.dataset.dazuoAudio = "playing";
+      var now = audioContext.currentTime + 0.04;
+      playGiftRattle(now);
+      playMeow(now + 0.04, 410, 0.3);
+      playMeow(now + 0.36, 485, 0.28);
+      playMeow(now + 0.66, 440, 0.34);
+      playSoftBoom(now + 0.92);
+      playTone(now + 1.04, 1046.5, 0.2, "sine", 0.105);
+      playTone(now + 1.16, 1568, 0.22, "triangle", 0.085);
+      playTone(now + 1.3, 2093, 0.24, "sine", 0.065);
+      return true;
+    }).catch(function () {
+      document.body.dataset.dazuoAudio = "blocked";
+      return false;
+    });
+  }
+
+  function completeDazuoSurprise(surprise, portrait) {
+    portrait.classList.remove("is-awaiting-surprise", "is-playing-surprise");
+    portrait.classList.add("is-surprise-complete");
+    surprise.classList.remove("is-active");
+    surprise.setAttribute("aria-hidden", "true");
+  }
+
+  function startDazuoSurprise(surprise, portrait) {
+    if (!surprise || !portrait || portrait.classList.contains("is-playing-surprise")) return;
+    window.clearTimeout(surpriseTimer);
+    portrait.classList.remove("is-awaiting-surprise", "is-surprise-complete");
+    portrait.classList.add("is-playing-surprise");
+    surprise.classList.remove("is-active");
+    void surprise.offsetWidth;
+    surprise.classList.add("is-active");
+    surprise.setAttribute("aria-hidden", "true");
+    playDazuoSound();
+    surpriseTimer = window.setTimeout(function () {
+      completeDazuoSurprise(surprise, portrait);
+    }, 4450);
+  }
+
+  function prepareDazuoSurprise(surprise, portrait) {
+    if (!surprise || !portrait) return;
+    portrait.classList.add("is-dazuo-result");
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      completeDazuoSurprise(surprise, portrait);
+      return;
+    }
+
+    var canStartWithSound = navigator.userActivation && navigator.userActivation.isActive;
+    if (canStartWithSound) {
+      startDazuoSurprise(surprise, portrait);
+      return;
+    }
+
+    portrait.classList.add("is-awaiting-surprise");
+    surprise.setAttribute("aria-hidden", "false");
   }
 
   function renderGallery() {
     document.getElementById("catGrid").innerHTML = config.cats.map(function (cat, index) {
       return '<button class="cat-card" type="button" data-cat-index="' + index + '" aria-label="查看' + cat.name + '的资料">' +
-        '<span class="card-image"><img src="' + cat.image + '" alt="' + cat.name + '" loading="lazy"><i>' + cat.type + "</i></span>" +
-        '<span class="card-copy"><small>' + cat.title + "</small><strong>" + cat.name + '</strong><span class="card-arrow" aria-hidden="true">↗</span></span>' +
+        '<span class="card-image"><img src="' + cat.image + '" alt="' + cat.name + '" loading="lazy" style="object-fit:' + (cat.imageFit || "cover") + '"><i>' + cat.type + "</i></span>" +
+        '<span class="card-copy"><small>' + cat.mbti + " · " + cat.title + "</small><strong>" + cat.name + '<span class="card-arrow" aria-hidden="true">↗</span></strong></span>' +
         "</button>";
     }).join("");
   }
@@ -141,8 +330,10 @@
   function openCatDialog(index) {
     var cat = config.cats[index];
     document.getElementById("dialogContent").innerHTML =
-      '<div class="dialog-image"><img src="' + cat.image + '" alt="' + cat.name + '"><span>' + cat.type + "</span></div>" +
-      '<div class="dialog-copy"><small>' + cat.type + " · " + cat.title + "</small><h3>" + cat.name + "</h3><p>" + cat.introduction + "</p>" +
+      '<div class="dialog-image"><img src="' + cat.image + '" alt="' + cat.name + '" style="object-fit:' + (cat.imageFit || "cover") + '"><span>' + cat.type + "</span></div>" +
+      '<div class="dialog-copy"><small>' + cat.mbti + " · " + cat.title + "</small><h3>" + cat.name + "</h3>" +
+      '<section><h4>猫咪小传</h4><p>' + cat.biography + "</p></section>" +
+      '<section><h4>你可能是</h4><p>' + cat.personality + "</p></section>" +
       '<div class="keyword-list">' + cat.keywords.map(function (word) { return "<span>" + word + "</span>"; }).join("") + "</div></div>";
     document.getElementById("catDialog").showModal();
   }
@@ -154,12 +345,20 @@
   fillConfiguredContent();
   renderFacts();
   renderGallery();
+  document.body.dataset.view = "home";
+
+  var previewType = new URLSearchParams(window.location.search).get("result");
+  var previewCat = config.cats.find(function (cat) { return cat.type === previewType; });
+  if (previewCat) renderResult(previewCat);
 
   document.getElementById("startButton").addEventListener("click", function () { startTest(true); });
   document.getElementById("showCatsButton").addEventListener("click", function () { showView("gallery"); });
   document.getElementById("galleryShortcut").addEventListener("click", function () { showView("gallery"); });
   document.getElementById("resultGalleryButton").addEventListener("click", function () { showView("gallery"); });
   document.getElementById("retryButton").addEventListener("click", function () { startTest(true); });
+  document.getElementById("dazuoSurpriseStart").addEventListener("click", function () {
+    startDazuoSurprise(document.getElementById("dazuoSurprise"), document.querySelector(".result-portrait-wrap"));
+  });
   document.getElementById("testBackButton").addEventListener("click", previousQuestion);
   document.getElementById("optionList").addEventListener("click", function (event) {
     var button = event.target.closest("[data-option]");

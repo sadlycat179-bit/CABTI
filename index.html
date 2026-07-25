@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#fffaf0">
   <meta name="description" content="CATBTI 校园猫人格测试">
   <title>CATBTI · 校园猫人格测试</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='24' font-size='24'%3E%F0%9F%90%BE%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -82,11 +83,48 @@
           <div class="result-portrait-wrap">
             <img id="resultImage" src="" alt="">
             <span class="type-stamp" id="resultStamp"></span>
+            <div class="dazuo-surprise" id="dazuoSurprise" aria-hidden="true">
+              <button class="surprise-start" id="dazuoSurpriseStart" type="button" aria-label="打开正在轻轻晃动的大佐礼盒"></button>
+              <div class="surprise-glow"></div>
+              <div class="jumping-dazuo" aria-hidden="true">
+                <img src="images/gent-dazuo.png" alt="">
+              </div>
+              <div class="gift-box" aria-hidden="true">
+                <img src="images/dazuo-gift-box.png" alt="">
+              </div>
+              <span class="spark spark-1">✦</span>
+              <span class="spark spark-2">✧</span>
+              <span class="spark spark-3">✦</span>
+              <span class="spark spark-4">✧</span>
+              <span class="spark spark-5">✦</span>
+              <span class="spark spark-6">✧</span>
+              <span class="spark spark-7">✦</span>
+              <span class="spark spark-8">✧</span>
+              <span class="confetti confetti-1"></span>
+              <span class="confetti confetti-2"></span>
+              <span class="confetti confetti-3"></span>
+              <span class="confetti confetti-4"></span>
+              <span class="confetti confetti-5"></span>
+              <span class="confetti confetti-6"></span>
+              <span class="confetti confetti-7"></span>
+              <span class="confetti confetti-8"></span>
+              <span class="soft-boom"></span>
+            </div>
           </div>
           <div class="result-copy">
-            <div class="cat-name-line"><span data-content="site.yourCatLabel"></span><strong id="resultCatName"></strong></div>
-            <p class="result-description" id="resultDescription"></p>
-            <div class="keyword-list" id="resultKeywords"></div>
+            <div class="cat-identity">
+              <div class="cat-name-line"><span data-content="site.yourCatLabel"></span><strong id="resultCatName"></strong></div>
+              <span class="mbti-badge" id="resultMbti"></span>
+            </div>
+            <section class="result-story" aria-labelledby="catStoryTitle">
+              <h3 id="catStoryTitle">猫咪小传</h3>
+              <p id="resultBiography"></p>
+            </section>
+            <section class="result-personality" aria-labelledby="personalityTitle">
+              <h3 id="personalityTitle">你可能是</h3>
+              <p id="resultPersonality"></p>
+            </section>
+            <div class="keyword-list" id="resultKeywords" aria-label="性格关键词"></div>
             <blockquote id="resultQuote"></blockquote>
           </div>
         </div>

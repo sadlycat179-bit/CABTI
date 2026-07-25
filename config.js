@@ -7,16 +7,32 @@ window.CATBTI_CONFIG = {
   site: {
     name: "CATBTI",
     shortName: "CATBTI",
-    intro: "你最像HBUT哪只猫",
+    eyebrow: "HBUT CAMPUS CAT PERSONALITY TEST",
+    subtitle: "16 种猫格，遇见你的校园猫搭子",
+    intro: "回答 16 道轻松小题，看看你的性格最像湖工哪一只校园猫。",
     startButton: "开始寻找我的猫格",
+    galleryButton: "查看全部猫咪",
+    facts: ["16 种猫格", "16 道题", "约 3 分钟"],
     testNote: "跟随第一直觉作答，就会遇见最像你的那只猫。",
     resultEyebrow: "你的 CATBTI 测试结果",
-    claimNotice: "欢迎向工作人员展示本页面领取对应炫酷猫格卡。",
+    yourCatLabel: "你的校园猫搭子",
+    claimNotice: "请向活动工作人员展示本页面，领取对应猫咪人格卡。",
     retryButton: "重新测试",
+    galleryEyebrow: "CATBTI CAT ATLAS",
+    galleryTitle: "认识全部 16 只校园猫",
+    galleryIntro: "每一种猫格都有自己的生活方式。点击猫咪，看看它的故事和对应性格。",
+    footer: "CATBTI · 喵栖梧猫德 class × HBUT 校园猫咪人格测试"
+  },
+
+  /*
+   * 四个字母依次对应 Energy、Perception、Decision、Lifestyle，
+   * 组成常见的 MBTI 参考型：E/I、N/S、F/T、P/J。
+   */
   dimensions: {
-    Social: { positive: "S", negative: "A", label: "社交能量" },
-    Feeling: { positive: "F", negative: "D", label: "感知方式" },
-    Lifestyle: { positive: "L", negative: "P", label: "生活节奏" }
+    Energy: { positive: "E", negative: "I", label: "社交能量" },
+    Perception: { positive: "N", negative: "S", label: "信息偏好" },
+    Decision: { positive: "F", negative: "T", label: "判断方式" },
+    Lifestyle: { positive: "P", negative: "J", label: "生活节奏" }
   },
 
   questions: [
@@ -24,16 +40,16 @@ window.CATBTI_CONFIG = {
       text: "如果你的对象变成一只苍蝇，又不小心飞进了你的嘴里，你已经快咽下去了",
       hint: "传说中你为爱甘愿被搁浅",
       options: [
-        { text: "等等！这是我对象！我要想办法救TA！", icon: "☀", score: { Social: 2 } },
-        { text: "......但从生理角度来说，我已经吞下去了", icon: "☁", score: { Social: -2 } }
+        { text: "等等！这是我对象！我要想办法救 TA！", icon: "☀", score: { Energy: 2 } },
+        { text: "……但从生理角度来说，我已经吞下去了", icon: "☁", score: { Energy: -2 } }
       ]
     },
     {
       text: "如果你的手机突然开始替你回复消息，而且每次都比你回复得更好",
       hint: "社交外包",
       options: [
-        { text: "虽然这很棒，但是亲近的人的信息我还是会亲自回复", icon: "♥", score: { Feeling: 2 } },
-        { text: "欧坤呀我也是直接撒手不管啦！", icon: "⌁", score: { Feeling: -2 } }
+        { text: "虽然这很棒，但亲近的人的信息我还是会亲自回复", icon: "♥", score: { Decision: 2 } },
+        { text: "欧坤呀，我也是直接撒手不管啦！", icon: "⌁", score: { Decision: -2 } }
       ]
     },
     {
@@ -45,19 +61,27 @@ window.CATBTI_CONFIG = {
       ]
     },
     {
+      text: "听到一个校园传说时，你通常先关注……",
+      hint: "一只猫、一盏灯，以及半夜三点的脚步声",
+      options: [
+        { text: "它背后会不会藏着更大的故事和隐喻", icon: "∞", score: { Perception: 2 } },
+        { text: "谁在什么时候、什么地点看见了什么", icon: "·", score: { Perception: -2 } }
+      ]
+    },
+    {
       text: "在一个谁也不认识的新社团里，你通常……",
       hint: "门已经推开，大家都在聊天。",
       options: [
-        { text: "主动找话题，很快就能混个脸熟", icon: "✦", score: { Social: 2 } },
-        { text: "先观察氛围，等别人来和我说话", icon: "◐", score: { Social: -2 } }
+        { text: "主动找话题，很快就能混个脸熟", icon: "✦", score: { Energy: 2 } },
+        { text: "先观察氛围，等别人来和我说话", icon: "◐", score: { Energy: -2 } }
       ]
     },
     {
       text: "你更容易被以下哪个打动？",
       hint: "每个人心里都有柔软的地方",
       options: [
-        { text: "命运你假糍粑", icon: "♡", score: { Feeling: 2 } },
-        { text: "大狗大狗叫叫叫", icon: "□", score: { Feeling: -2 } }
+        { text: "命运你假糍粑", icon: "♡", score: { Decision: 2 } },
+        { text: "大狗大狗叫叫叫", icon: "□", score: { Decision: -2 } }
       ]
     },
     {
@@ -69,19 +93,27 @@ window.CATBTI_CONFIG = {
       ]
     },
     {
+      text: "看到一只从没见过的校园猫，你更想知道……",
+      hint: "它在树下看了你一眼",
+      options: [
+        { text: "它会有怎样的性格、关系网和隐藏身份", icon: "?", score: { Perception: 2 } },
+        { text: "它多大、什么花色、平时在哪出没", icon: "i", score: { Perception: -2 } }
+      ]
+    },
+    {
       text: "食堂遇到很想认识的同学，你会选择……",
       hint: "端着餐盘的你们正好对上视线。",
       options: [
-        { text: "自然地坐到附近，找机会聊两句", icon: "☺", score: { Social: 2 } },
-        { text: "默默记住，下次有合适机会再说", icon: "…", score: { Social: -2 } }
+        { text: "自然地坐到附近，找机会聊两句", icon: "☺", score: { Energy: 2 } },
+        { text: "默默记住，下次有合适机会再说", icon: "…", score: { Energy: -2 } }
       ]
     },
     {
       text: "小组讨论出现分歧时，你更在意……",
       hint: "两种方案各有支持者。",
       options: [
-        { text: "每个人的感受有没有被照顾到", icon: "◎", score: { Feeling: 2 } },
-        { text: "哪个方案的逻辑和效率更高", icon: "△", score: { Feeling: -2 } }
+        { text: "每个人的感受有没有被照顾到", icon: "◎", score: { Decision: 2 } },
+        { text: "哪个方案的逻辑和效率更高", icon: "△", score: { Decision: -2 } }
       ]
     },
     {
@@ -93,19 +125,27 @@ window.CATBTI_CONFIG = {
       ]
     },
     {
+      text: "学习一个新工具时，你更常从哪里开始？",
+      hint: "说明书有 80 页，按钮有 20 个",
+      options: [
+        { text: "先猜它的逻辑，试着拼出整体玩法", icon: "↗", score: { Perception: 2 } },
+        { text: "先照步骤完成一次，再慢慢熟悉细节", icon: "1", score: { Perception: -2 } }
+      ]
+    },
+    {
       text: "热闹活动结束后，你会怎样恢复电量？",
       hint: "夜色安静下来，校园灯还亮着。",
       options: [
-        { text: "拉上朋友续摊，快乐还没结束", icon: "♪", score: { Social: 2 } },
-        { text: "回到自己的角落，享受安静时间", icon: "◒", score: { Social: -2 } }
+        { text: "拉上朋友续摊，快乐还没结束", icon: "♪", score: { Energy: 2 } },
+        { text: "回到自己的角落，享受安静时间", icon: "◒", score: { Energy: -2 } }
       ]
     },
     {
       text: "收到一份不太实用但很用心的礼物，你会……",
       hint: "包装纸上还有手写的小猫。",
       options: [
-        { text: "因为这份心意而认真珍藏", icon: "❀", score: { Feeling: 2 } },
-        { text: "感谢对方，也会想它能用在哪里", icon: "◇", score: { Feeling: -2 } }
+        { text: "因为这份心意而认真珍藏", icon: "❀", score: { Decision: 2 } },
+        { text: "感谢对方，也会想它能用在哪里", icon: "◇", score: { Decision: -2 } }
       ]
     },
     {
@@ -115,69 +155,213 @@ window.CATBTI_CONFIG = {
         { text: "先奖励自己，想做什么就做什么", icon: "☆", score: { Lifestyle: 2 } },
         { text: "重新排计划，把之后的任务提前", icon: "▤", score: { Lifestyle: -2 } }
       ]
+    },
+    {
+      text: "回想一段难忘经历时，你最先想起的是……",
+      hint: "记忆里的校园慢慢亮起来",
+      options: [
+        { text: "那段经历后来带给我的想法和改变", icon: "↺", score: { Perception: 2 } },
+        { text: "当时真实的画面、声音和具体细节", icon: "▣", score: { Perception: -2 } }
+      ]
     }
   ],
 
-  /* 三个字母依次对应 Social、Feeling、Lifestyle 的测试结果。 */
   resultMap: {
-    SFL: "LOVE",
-    SFP: "HIHI",
-    SDL: "LYFE",
-    SDP: "BOSS",
-    AFL: "SALT",
-    AFP: "RUNR",
-    ADL: "EATR",
-    ADP: "XXXL"
+    ENFJ: "LOVE-U",
+    ESFP: "HIHI",
+    ISTJ: "SALT",
+    ISFP: "LYFE",
+    INTP: "EATR",
+    ISTP: "RUNER",
+    ISFJ: "XXXL",
+    ENTJ: "BOSS",
+    INFP: "SONG",
+    ESFJ: "KISS",
+    ENFP: "GLOW",
+    ENTP: "IDEA",
+    ESTP: "QUEEN",
+    ESTJ: "FREE",
+    INFJ: "LAMP",
+    INTJ: "GENT"
   },
 
   cats: [
     {
-      type: "LOVE", name: "蛋挞", title: "咪爱你", image: "images/love-danta.svg",
-      introduction: "蛋挞是校园里流动的小太阳。它记得每个熟悉的脚步声，也总能第一时间察觉谁需要陪伴。对它来说，喜欢就要大方表达，温柔也应该有回音。",
-      keywords: ["真诚", "共情", "热烈", "治愈"],
-      quote: "你的心里住着一小块永不打烊的暖阳。被你认真喜欢过，是一件很幸运的事。"
+      type: "LOVE-U",
+      mbti: "ENFJ",
+      name: "蛋挞",
+      title: "咪爱你",
+      image: "images/real-cats/love-u-danta.webp",
+      biography: "蛋挞曾经是宿舍里的家猫，意外跑出后没能再回到原来的家，从此开始校园流浪生活。绝育后，它有了“蛋挞”这个新名字，也像得到了一次重新出发的机会。它大多数时候亲人又黏人，偶尔会突然闹点小脾气；即使一开始对青橘很不耐烦，最后还是接受了这个总来贴贴的新朋友。",
+      personality: "你很会察觉气氛，也常常比别人更早发现谁今天不太开心。你愿意主动照顾关系、鼓励身边的人，相信真诚能让疏远慢慢变成亲近；只是偶尔也要记得，不必把所有人的情绪都扛在自己肩上。",
+      keywords: ["真诚", "共情", "主动靠近", "重感情"],
+      quote: "经历过失落的人，依然可以认真去爱。你愿意再次靠近世界，本身就是一种很温柔的勇敢。"
     },
     {
-      type: "HIHI", name: "大夹子", title: "热情小咪", image: "images/hihi-dajiazi.svg",
-      introduction: "大夹子是社交场上的气氛担当，永远对新鲜的人和事充满兴趣。它行动利落、表达直接，走到哪里都能迅速召集一群快乐伙伴。",
-      keywords: ["外向", "爽快", "行动派", "感染力"],
-      quote: "你无需刻意发光，向前奔跑时扬起的风，就足以让平凡的一天变得热闹。"
+      type: "HIHI",
+      mbti: "ESFP",
+      name: "大夹子",
+      title: "自来熟",
+      image: "images/real-cats/hihi-dajiazi.webp",
+      biography: "大夹子把整座校园都当成可以随时串门的客厅。新面孔不会让它紧张，路过的声音、突然出现的玩具和临时凑起的小热闹，都可能成为它今天最感兴趣的事。它的熟络来得很快，快乐也从不藏着。",
+      personality: "你对当下的快乐有很灵敏的雷达，擅长用行动和真实反应把气氛带起来。你适应新环境很快，也愿意和人分享体验；比起反复预演，你更相信先去试试，故事自然会在路上发生。",
+      keywords: ["外向", "爽快", "鲜活", "感染力"],
+      quote: "你不必刻意成为焦点。你认真享受生活的样子，本身就会让周围亮起来。"
     },
     {
-      type: "SALT", name: "薄荷", title: "盐系老头", image: "images/salt-bohe.svg",
-      introduction: "薄荷安静、细腻，拥有清清爽爽的边界感。它不轻易靠近，却会把认定的人放进柔软的心里，在不动声色处给予长久陪伴。",
-      keywords: ["细腻", "克制", "慢热", "长情"],
-      quote: "你不是冷淡，只是把温柔藏得很深。懂你的人，会在安静里听见你的认真。"
+      type: "SALT",
+      mbti: "ISTJ",
+      name: "薄荷",
+      title: "盐系老头",
+      image: "images/real-cats/salt-bohe.jpg",
+      biography: "薄荷刚出现时瘦瘦的，嗓音还有点像破锣，后来在大家的照料下逐渐长成了“大号薄荷”。到了猫生中年，它对很多事都淡淡的，只守着熟悉的竹林小路和自己的生活节奏。它曾与柠檬形影不离；柠檬离开后，薄荷有很长一段时间都是独自生活。后来它遇到了黛玉，一开始彼此不太对付，还会上演宿敌对决；可日子久了，关系也慢慢缓和起来。",
+      personality: "你重视稳定、分寸和说到做到，不太喜欢被临时变化打乱节奏。你表达关心的方式可能不热闹，却会把认定的人和答应过的事牢牢记住；别人未必第一眼看懂你，但时间越久，越能发现你的可靠和长情。",
+      keywords: ["稳重", "克制", "守旧情", "有边界"],
+      quote: "你的温柔不靠音量证明。那些被你认真记住的人和小事，就是你最长情的表达。"
     },
     {
-      type: "LYFE", name: "笑笑", title: "躺平老奶", image: "images/lyfe-xiaoxiao.svg",
-      introduction: "笑笑深谙松弛之道。它喜欢热闹，也懂得随时给自己放个小假。计划可以改变，烦恼可以等等，舒服地活在当下才是头等大事。",
-      keywords: ["松弛", "乐观", "随性", "好相处"],
-      quote: "你有一种让生活慢下来的天赋。世界催得再急，也别忘了给自己晒太阳的时间。"
+      type: "LYFE",
+      mbti: "ISFP",
+      name: "笑笑",
+      title: "躺平老奶",
+      image: "images/real-cats/lyfe-xiaoxiao.webp",
+      biography: "笑笑很懂得怎样把日子过舒服：阳光到了就晒一会儿，想亲近时慢慢走来，累了也会毫无负担地休息。它不和世界较劲，却能以自己的松弛和人气代表校猫参加活动，为伙伴们争取猫粮和驱虫药——看似躺平，心里也装着大家。",
+      personality: "你对细微的氛围和真实体验很敏感，比起宏大的计划，更在意此刻是否自在、是否忠于内心。你通常随和，不爱把观点强加给别人；但遇到真正珍惜的人和事，你也会展现安静而坚定的一面。",
+      keywords: ["松弛", "温柔", "随性", "有分寸"],
+      quote: "你有让生活慢下来的天赋。世界催得再急，也别忘了给自己晒太阳的时间。"
     },
     {
-      type: "EATR", name: "乌云", title: "吞噬者", image: "images/eatr-wuyun.svg",
-      introduction: "乌云拥有冷静敏锐的观察力，习惯先看懂世界，再决定如何出手。它珍惜自己的能量，对真正感兴趣的事却能投入惊人的专注。",
-      keywords: ["冷静", "敏锐", "专注", "神秘"],
-      quote: "沉默不是空白，而是你正在消化整个世界。你的深度，本就不必向所有人解释。"
+      type: "EATR",
+      mbti: "INTP",
+      name: "乌云",
+      title: "吞噬者",
+      image: "images/real-cats/eatr-wuyun.jpg",
+      biography: "乌云看起来像一团正在待机的黑色系统，真正感兴趣的东西出现时却会立刻进入深度运行。无论是食物、动静还是某个暂时想不明白的角落，它都愿意投入惊人的专注，把问题从外到里研究一遍。",
+      personality: "你习惯先观察、分析和建立自己的解释，再决定要不要参与。你对空泛的热闹兴趣有限，却可能为一个好问题钻研很久；偶尔的沉默并不是走神，而是你的脑内已经同时打开了许多页面。",
+      keywords: ["冷静", "好奇", "专注", "会拆解"],
+      quote: "沉默并不代表空白。你只是在消化世界，并准备提出一个别人还没有想到的问题。"
     },
     {
-      type: "RUNR", name: "蛋饼", title: "跑男", image: "images/runr-danbing.svg",
-      introduction: "蛋饼有自己的路线和节奏。看似安静，认准目标后却比谁都坚定。它喜欢把事情稳稳做好，再悄悄奔向下一个想去的地方。",
-      keywords: ["独立", "坚定", "可靠", "有韧性"],
-      quote: "你不需要跟上别人的时钟。沿着自己的路线前进，每一步都算数。"
+      type: "RUNER",
+      mbti: "ISTP",
+      name: "蛋饼",
+      title: "跑男",
+      image: "images/real-cats/runer-danbing.jpg",
+      biography: "蛋饼是桥头那只瘦瘦小小的三花。它十分怕人，总会先替自己找好退路；就连出院那天，也因为受惊而不得不多住了一周。回到校园后，它喜欢跟着蛋挞和青橘一起活动。所谓“跑男”，不是漫无目的地跑，而是把安全距离牢牢掌握在自己手里。",
+      personality: "你独立、务实，遇到具体问题时往往比讨论问题更有精神。你喜欢先观察现场，再边做边调整，不愿被繁琐规则困住；平时看着低调，关键时刻却能迅速找到最直接的解决办法。",
+      keywords: ["独立", "警觉", "务实", "反应快"],
+      quote: "谨慎撤退不是失败，而是在为下一次行动保留空间。找到自己的路线，每一步都会算数。"
     },
     {
-      type: "XXXL", name: "三宝", title: "大卡车", image: "images/xxxl-sanbao.svg",
-      introduction: "三宝沉稳务实，喜欢秩序清晰、心里有底的生活。它很少被外界打乱节奏，总能把重要的事情妥帖接住，是让人安心的存在。",
-      keywords: ["沉稳", "务实", "自洽", "安全感"],
-      quote: "你的稳定不是无趣，而是一种珍贵的笃定。慢慢来，也能把日子过得很有分量。"
+      type: "XXXL",
+      mbti: "ISFJ",
+      name: "三宝",
+      title: "大卡车",
+      image: "images/real-cats/xxxl-sanbao.jpg",
+      biography: "三宝的存在感像一辆停得稳稳的大卡车：体格醒目，节奏却不慌不忙。它熟悉自己的地盘，也记得谁常来、谁值得靠近；很多温柔都藏在慢吞吞的动作和踏实的陪伴里。它和四喜是一对夫妻，一个稳稳守着生活的底盘，一个把方向盘握得很紧；只要三宝安稳待着，周围好像也会跟着安定下来。",
+      personality: "你细心、可靠，容易注意到别人没有说出口的实际需要。你不一定喜欢站在最前面，却很愿意把重要的小事接住；当关系和环境稳定下来，你会成为那个让大家放心依靠的人。",
+      keywords: ["踏实", "细心", "守护", "安全感"],
+      quote: "你不必用轰轰烈烈证明重要。有人想起“放心”两个字时，想到的可能就是你。"
     },
     {
-      type: "BOSS", name: "大逼斗", title: "老大", image: "images/boss-dabidou.svg",
-      introduction: "大逼斗天生有主见，既能镇住场面，也懂得照顾自己的地盘。它判断果断、执行清晰，遇到问题从不绕路，是可靠的领头猫。",
-      keywords: ["果断", "清醒", "领导力", "守护欲"],
-      quote: "你知道自己要什么，也有能力守护在意的一切。真正的底气，从来不需要高声证明。"
+      type: "BOSS",
+      mbti: "ENTJ",
+      name: "大逼斗",
+      title: "老大",
+      image: "images/real-cats/boss-dabidou.jpg",
+      biography: "大逼斗年轻时猫如其名，喵喵拳说来就来，身上的伤病和独自养育幼崽的经历却也让它吃过不少苦。绝育后，它慢慢长胖，与贴贴、左下角熟识起来，不再总是形单影只。后来它独自迁往五教附近，变得胆小而神秘，却依然把自己的生活安排得有模有样。",
+      personality: "你目标感强，习惯迅速判断局面，也不怕承担决定。你希望事情清清楚楚、有效推进，遇到困境时更愿意靠行动重新建立秩序；如果愿意给不同节奏的人多一点缓冲，你的力量会因此更有温度。",
+      keywords: ["果断", "能扛事", "有主见", "生命力"],
+      quote: "真正的老大并不是从不受伤，而是受过伤以后，依然能为自己重新找到位置。"
+    },
+    {
+      type: "SONG",
+      mbti: "INFP",
+      name: "黛玉",
+      title: "怂",
+      image: "images/real-cats/song-daiyu.webp",
+      biography: "黛玉对世界的动静格外敏感，风吹草动时会先退半步，安全以后才偷偷把好奇心探出来。它在社媒里既会“自愿放弃高考”，也曾和薄荷上演宿敌对决；一开始互相看不太顺眼，后来关系却渐渐好起来。表面很怂，内心戏和自己的坚持却一样不少。",
+      personality: "你内心有一套很认真、很柔软的价值标准，也很容易感受到别人忽略的情绪和意味。你可能需要更多时间确认安全感，但一旦认定某件事值得，就会表现出超出想象的坚持；你的“怂”里，其实藏着谨慎和珍惜。",
+      keywords: ["敏感", "理想主义", "慢热", "有韧性"],
+      quote: "勇敢从来不是没有害怕。愿意带着害怕继续靠近，已经是很了不起的前进。"
+    },
+    {
+      type: "KISS",
+      mbti: "ESFJ",
+      name: "左下角",
+      title: "亲亲",
+      image: "images/real-cats/kiss-zuoxiajiao.webp",
+      biography: "左下角的名字来自初次被拍到时所在的照片角落，可它后来一点也不愿待在关系的角落里。它非常亲人，喜欢被摸摸；从与伙伴们相依为命，到和大逼斗熟识，再到和蛋壳一度形影不离，它总能把日子过成有同伴、有贴贴的生活。",
+      personality: "你重视陪伴、回应和群体里的和谐，常常会主动确认大家有没有被照顾到。你擅长把善意落实成具体行动，也希望自己的付出能被看见；当你不再用别人的反馈衡量全部价值，你的温暖会更自在。",
+      keywords: ["亲和", "体贴", "重陪伴", "有回应"],
+      quote: "你的爱很具体，所以格外有力量。也请记得，把同样认真而柔软的回应留一份给自己。"
+    },
+    {
+      type: "GLOW",
+      mbti: "ENFP",
+      name: "青橘",
+      title: "黏人社交官",
+      image: "images/real-cats/glow-qingju.jpg",
+      biography: "青橘是一只看起来很和善的亲人橘猫。刚到桥头时，它就认准了蛋挞这个新朋友；即使常常挨揍，也要厚着脸皮继续靠近。最后，冷脸的蛋挞也愿意和它睡在一起。青橘的厉害之处，是总能在一次次碰壁后，再试一种靠近的方式。",
+      personality: "你热情、好奇，擅长从陌生关系里发现新的可能，也愿意把自己的活力分享给别人。你不太容易因为一次冷场就彻底退缩，总相信多一点真诚、多试一种方式，也许就能打开新的连接。",
+      keywords: ["热情", "好奇", "会连接", "不怕冷场"],
+      quote: "有些关系不是一见如故，而是一次次真诚靠近以后，终于愿意为彼此留出位置。"
+    },
+    {
+      type: "IDEA",
+      mbti: "ENTP",
+      name: "蛋黄",
+      title: "规则测试员",
+      image: "images/real-cats/idea-danhuang.jpg",
+      biography: "蛋黄是湖工“蛋字辈”的开端，也是一只让人又爱又恨的小坏猫。它贪玩、下手没轻重，常把边界试到最后一格；绝育后去办公室蹭吃蹭喝，却因为对老师动手而喜提“蛋黄不得入内”。规矩在它眼里，大概总要亲爪验证一遍才算数。",
+      personality: "你反应快、点子多，喜欢用提问和尝试拆开习以为常的答案。你享受新问题带来的刺激，也善于找到意外的解决方案；如果在出手前多估量一点影响，你的聪明就不只是一场精彩瞬间，而会成为真正可靠的创造力。",
+      keywords: ["机灵", "敢试", "点子多", "爱挑战"],
+      quote: "你总能发现墙上那扇还没人画出来的门。打开它之前，记得先看看门后站着谁。"
+    },
+    {
+      type: "QUEEN",
+      mbti: "ESTP",
+      name: "蛋壳",
+      title: "行动派女王",
+      image: "images/real-cats/queen-danke.jpg",
+      biography: "蛋壳刚到三教时就靠撒娇、贴贴和漂亮脸蛋迅速积攒了人气。随着资历增长，它从“蛋壳宝宝”一路升级成“蛋壳女王”：爱坐车座，亲人可撸，也会欺猫斗狗；日常不是接受供奉，就是拉着左下角打打闹闹。不过这学期蛋壳失踪了，像是把舞台灯一关，突然从熟悉的路线里退场。它很少把想法留到明天，喜欢现在就行动。",
+      personality: "你现实、敏捷，擅长抓住眼前机会，并在变化中快速做出反应。你不喜欢被空谈拖住，更信任亲自体验得到的答案；在冲出去之前多看一眼后果，会让你的果敢更加可靠。",
+      keywords: ["果敢", "临场强", "爱体验", "存在感"],
+      quote: "你让世界从“要不要”迅速变成“已经开始”。再带上一点判断，速度就会成为真正的优势。"
+    },
+    {
+      type: "FREE",
+      mbti: "ESTJ",
+      name: "四喜",
+      title: "自由总管",
+      image: "images/real-cats/free-sixi.jpg",
+      biography: "四喜脾气很冲，连吃饭都能骂骂咧咧，却也是一位极有主见的猫妈妈。它和三宝是一对夫妻：三宝像稳稳的大卡车，四喜则像方向盘上那只不肯松开的爪子。孩子们被安置到活动室后，它接受照料，却始终没有放弃对自由的打算；谋划许久，它终于在一个夜晚突破防线，回到自己选择的生活。它不是拒绝被帮助，只是一定要亲自决定归属。",
+      personality: "你务实、直接，习惯迅速确认目标，再把局面推向一个明确结果。你愿意承担责任，也很在意自己是否拥有决定权；当你把标准讲清楚，同时给别人保留选择空间，你的组织力会从“管住”变成“带好”。",
+      keywords: ["有主见", "执行力", "敢负责", "重自由"],
+      quote: "你可以接受善意，也可以保留方向盘。真正适合你的秩序，应该容得下你的选择。"
+    },
+    {
+      type: "LAMP",
+      mbti: "INFJ",
+      name: "桔子灯",
+      title: "慢热守望者",
+      image: "images/real-cats/lamp-juzideng.webp",
+      biography: "桔子灯小时候见人就跑，总跟同胞安安形影不离。长大并经历一个寒冬后，它慢慢学会了信任，会主动发出像小狗一样的叫声，也愿意在熟悉的小屋附近撒娇、休息。它的靠近不是突然改变，而是把一次次安全的相遇认真记了下来。",
+      personality: "你善于从细节里理解人，也很在意关系中更深、更稳定的连接。你不会轻易把自己交给陌生环境，但一旦确认安全和价值，就愿意持续投入；只是别让长期共情耗空能量，保留边界并不会减少你的善良。",
+      keywords: ["慢热", "洞察", "重连接", "温柔坚定"],
+      quote: "信任不必一夜长成。你每一次谨慎而真诚的靠近，都在为自己点亮一盏小灯。"
+    },
+    {
+      type: "GENT",
+      mbti: "INTJ",
+      name: "大佐",
+      title: "风度翩翩",
+      image: "images/gent-dazuo.png",
+      imageFit: "contain",
+      biography: "大佐是一只习惯独来独往的奶牛公猫。流浪初期，它曾在东区与狗打架受重伤，获救痊愈后转到北区生活，也变得更懂得观察风险、避开无谓冲突。它嘴很馋，却又挑食；亲人有猫德，但会先判断你和值不值得靠近。小红书里的大佐还能在“清纯萌猫、伪装大师、猫学教授、教导主任”等身份间熟练切换，聪明又很会使用自己的魅力。2025 年底，它终于被细心的领养人接回了新家。",
+      personality: "你偏爱独立观察，习惯先看清环境、判断风险，再决定把精力投向哪里。你有自己的标准，不会因为热闹就降低要求；一旦认定目标或信任某个人，你会用很聪明、很有策略的方式靠近。别人偶尔会觉得你难懂，其实你只是把真心和胃口一样，都留给真正合适的选择。",
+      keywords: ["内向警觉", "聪明", "有策略", "标准很高"],
+      quote: "你不是拒绝世界，只是在认真选择入口。保持判断，也别忘了给值得的人一次走近你的机会。"
     }
   ]
 };
