@@ -10,10 +10,10 @@
 
 - 所有站点文字、题目、选项、计分和猫咪资料都在 `config.js`。
 - 猫咪图片放在 `images` 文件夹，替换图片后同步修改 `config.js` 中对应的 `image` 路径。
-- 测试由 Energy、Perception、Decision、Lifestyle 四个维度计算；四个结果字母组成 MBTI 参考型，再通过 `resultMap` 映射到 16 种 CATBTI 猫格。
-- 最终结果页使用 `images/real-cats` 和 `images/updated-cats` 中的真实校园猫照片；大佐使用 `images/gent-dazuo.png` 透明底素材。
+- 测试按“对人态度、行动方式、出现区域、追求”四类 CATBTI 标签匹配 16 种猫格；前两类分别由三道题多数票决定。
+- 最终结果页使用 `images/real-cats`、`images/updated-cats` 和 `images/docx-update` 中的校园猫照片。
 - `config.js` 中每只猫分别维护“猫咪小传”“你可能是”“关键词”和“给你的话”。
-- 当前题库为 20 题，每个 MBTI 维度各 5 题，减少维度平分带来的结果偏向。
+- 当前题库为 8-10 题；追求题按上一题分支，特定东区组合会出现三猫分流题。
 - 结算页底部集中展示鸣谢、交流群、公众号二维码和猫协招新说明。
 
 ## 目录

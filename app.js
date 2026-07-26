@@ -4,7 +4,7 @@
   var config = window.CATBTI_CONFIG;
   var views = Array.from(document.querySelectorAll(".view"));
   var currentQuestion = 0;
-  var answers = new Array(config.questions.length).fill(null);
+  var answers = {};
   var transitionTimer = null;
   var audioContext = null;
   var surpriseTimer = null;
@@ -12,6 +12,10 @@
   var receiptTimer = null;
   var currentPhotoIndex = 0;
   var currentPhotoCount = 0;
+  var currentResultCat = null;
+  var galleryReturnView = null;
+  var catIntroTimer = null;
+  var dialogEffectTimer = null;
   var receiptPrintDuration = 2800;
 
   function getByPath(object, path) {
@@ -35,37 +39,76 @@
     document.getElementById("app").focus({ preventScroll: true });
   }
 
-  function renderFacts() {
-    document.getElementById("quickFacts").innerHTML = config.site.facts.map(function (fact) {
-      return '<span><i aria-hidden="true"></i>' + fact + "</span>";
-    }).join("");
-  }
-
   function startTest(reset) {
     window.clearTimeout(receiptTimer);
     window.clearTimeout(surpriseDelayTimer);
-    if (reset) answers.fill(null);
+    if (reset) answers = {};
     currentQuestion = 0;
     showView("test");
     renderQuestion();
   }
 
+  function getQuestionById(id) {
+    return config.questions.find(function (question) { return question.id === id; });
+  }
+
+  function getAnswerValue(id) {
+    var question = getQuestionById(id);
+    var answerIndex = answers[id];
+    return question && answerIndex !== undefined ? question.options[answerIndex].value : null;
+  }
+
+  function getMajority(ids, firstValue, secondValue) {
+    return window.CATBTI_MATCHER.getMajority(ids.map(getAnswerValue), firstValue, secondValue);
+  }
+
+  function calculateTraits() {
+    var aspiration = getAnswerValue("aspiration");
+    var pursuit = aspiration === "food" ? "food" : null;
+    if (aspiration === "social") pursuit = getAnswerValue("pursuit-social");
+    if (aspiration === "autonomy") pursuit = getAnswerValue("pursuit-autonomy");
+
+    return {
+      attitude: getMajority(["attitude-1", "attitude-2", "attitude-3"], "friendly", "cautious"),
+      action: getMajority(["action-1", "action-2", "action-3"], "active", "observer"),
+      area: getAnswerValue("area"),
+      pursuit: pursuit
+    };
+  }
+
+  function traitsMatch(left, right) {
+    return ["attitude", "action", "area", "pursuit"].every(function (key) {
+      return left[key] && left[key] === right[key];
+    });
+  }
+
+  function getVisibleQuestions() {
+    var ids = config.flow.base.slice();
+    var aspiration = getAnswerValue("aspiration");
+    var pursuitQuestion = config.flow.pursuitBranches[aspiration];
+    if (pursuitQuestion) ids.push(pursuitQuestion);
+
+    var traits = calculateTraits();
+    if (traitsMatch(traits, config.flow.special.traits)) ids.push(config.flow.special.question);
+    return ids.map(getQuestionById);
+  }
+
   function renderQuestion() {
-    var question = config.questions[currentQuestion];
-    var total = config.questions.length;
+    var visibleQuestions = getVisibleQuestions();
+    var question = visibleQuestions[currentQuestion];
+    var total = visibleQuestions.length;
     var percent = Math.round(((currentQuestion + 1) / total) * 100);
     var panel = document.getElementById("questionPanel");
 
     document.getElementById("progressLabel").textContent = "进度 " + (currentQuestion + 1) + " / " + total;
     document.getElementById("progressPercent").textContent = percent + "%";
     document.getElementById("progressBar").style.width = percent + "%";
-    document.getElementById("questionNumber").textContent = "QUESTION " + String(currentQuestion + 1).padStart(2, "0");
+    document.getElementById("questionNumber").textContent = question.dimension.toUpperCase() + " / QUESTION " + String(currentQuestion + 1).padStart(2, "0");
     document.getElementById("questionTitle").textContent = question.text;
-    document.getElementById("questionHint").textContent = question.hint || "";
     document.getElementById("testBackButton").disabled = currentQuestion === 0;
 
     document.getElementById("optionList").innerHTML = question.options.map(function (option, index) {
-      var selected = answers[currentQuestion] === index;
+      var selected = answers[question.id] === index;
       var catStyle = (currentQuestion * 2 + index) % 8;
       return '<button class="option-button' + (selected ? " is-selected" : "") + '" type="button" role="radio" aria-checked="' + selected + '" data-option="' + index + '">' +
         '<span class="option-cat cat-style-' + catStyle + '" aria-hidden="true"><span class="cat-face"><i></i><i></i><b></b></span></span>' +
@@ -81,7 +124,8 @@
 
   function selectAnswer(index) {
     window.clearTimeout(transitionTimer);
-    answers[currentQuestion] = index;
+    var question = getVisibleQuestions()[currentQuestion];
+    answers[question.id] = index;
     document.querySelectorAll(".option-button").forEach(function (button, buttonIndex) {
       var selected = buttonIndex === index;
       button.classList.toggle("is-selected", selected);
@@ -89,7 +133,8 @@
     });
 
     transitionTimer = window.setTimeout(function () {
-      if (currentQuestion < config.questions.length - 1) {
+      var visibleQuestions = getVisibleQuestions();
+      if (currentQuestion < visibleQuestions.length - 1) {
         currentQuestion += 1;
         renderQuestion();
       } else {
@@ -106,26 +151,17 @@
   }
 
   function calculateResult() {
-    var totals = {};
-    Object.keys(config.dimensions).forEach(function (dimension) { totals[dimension] = 0; });
-
-    answers.forEach(function (answerIndex, questionIndex) {
-      var option = config.questions[questionIndex].options[answerIndex];
-      if (!option) return;
-      Object.keys(option.score).forEach(function (dimension) {
-        totals[dimension] += option.score[dimension];
-      });
-    });
-
-    var dimensionKey = Object.keys(config.dimensions).map(function (dimension) {
-      return totals[dimension] >= 0 ? config.dimensions[dimension].positive : config.dimensions[dimension].negative;
-    }).join("");
-    var type = config.resultMap[dimensionKey];
-    return config.cats.find(function (cat) { return cat.type === type; }) || config.cats[0];
+    var traits = calculateTraits();
+    var specialChoice = getAnswerValue(config.flow.special.question);
+    return {
+      cat: window.CATBTI_MATCHER.matchCat(config, traits, specialChoice),
+      traits: traits
+    };
   }
 
   function getCatImages(cat) {
-    return cat.images && cat.images.length ? cat.images : [cat.image];
+    if (cat.imagePending) return [];
+    return cat.images && cat.images.length ? cat.images : (cat.image ? [cat.image] : []);
   }
 
   function updatePhotoPagination(index) {
@@ -152,14 +188,15 @@
     var portrait = document.querySelector(".result-portrait-wrap");
     currentPhotoCount = images.length;
     currentPhotoIndex = 0;
-    track.innerHTML = images.map(function (image, index) {
-      var fit = index === 0 && cat.images ? "cover" : (cat.imageFit || "cover");
-      return '<img src="' + image + '" alt="' + cat.name + '的照片 ' + (index + 1) + '" style="object-fit:' + fit + '">';
-    }).join("");
+    track.innerHTML = images.length ? images.map(function (image, index) {
+      return '<img src="' + image + '" alt="' + cat.name + '的照片 ' + (index + 1) + '" style="object-fit:contain">';
+    }).join("") : '<div class="photo-placeholder" role="img" aria-label="' + cat.name + '的照片待补充"><span>ฅ</span><strong>' + cat.name + '</strong><small>照片待补充</small></div>';
     pagination.innerHTML = images.map(function (_, index) {
       return '<button type="button" data-photo-index="' + index + '" aria-label="查看第 ' + (index + 1) + ' 张照片" aria-current="' + (index === 0) + '"></button>';
     }).join("");
-    portrait.classList.toggle("has-single-photo", images.length === 1);
+    portrait.classList.toggle("has-single-photo", images.length <= 1);
+    portrait.classList.toggle("has-multiple-photos", images.length > 1);
+    portrait.classList.toggle("has-pending-photo", images.length === 0);
     track.scrollLeft = 0;
     updatePhotoPagination(0);
   }
@@ -167,67 +204,137 @@
   function completeReceiptPrint(scene, resultView) {
     scene.classList.add("is-printed");
     resultView.classList.add("is-receipt-ready");
+    playCatIntroEffect(document.querySelector(".result-photo-stage"), currentResultCat, "result");
+  }
+
+  function completeCatIntroEffect(host) {
+    if (!host) return;
+    host.classList.remove("is-cat-intro-pending", "is-cat-intro-active");
+    host.classList.add("is-cat-intro-complete");
+  }
+
+  function prepareCatIntroEffect(host, cat) {
+    if (!host) return;
+    host.classList.remove("is-cat-intro-pending", "is-cat-intro-active", "is-cat-intro-complete");
+    if (cat && cat.introEffect === "big-face") {
+      host.classList.add("is-cat-intro-pending");
+      var effectImage = host.querySelector(".cat-intro-effect img");
+      if (effectImage) effectImage.src = "images/updated-cats/zuoxiajiao-surprise-cutout.png";
+    } else {
+      host.classList.add("is-cat-intro-complete");
+    }
+  }
+
+  function playCatIntroEffect(host, cat, context) {
+    if (!host || !cat || cat.introEffect !== "big-face") return;
+    var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.clearTimeout(context === "dialog" ? dialogEffectTimer : catIntroTimer);
+    if (reducedMotion) {
+      completeCatIntroEffect(host);
+      return;
+    }
+    host.classList.remove("is-cat-intro-complete");
+    host.classList.add("is-cat-intro-pending");
+    void host.offsetWidth;
+    host.classList.add("is-cat-intro-active");
+    var finish = function () { completeCatIntroEffect(host); };
+    if (context === "dialog") dialogEffectTimer = window.setTimeout(finish, 2700);
+    else catIntroTimer = window.setTimeout(finish, 2700);
   }
 
   function startReceiptPrint() {
     var scene = document.getElementById("receiptScene");
-    var feed = document.getElementById("receiptFeed");
-    var receipt = document.getElementById("resultReceipt");
     var resultView = document.getElementById("resultView");
-    var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     window.clearTimeout(receiptTimer);
     scene.classList.remove("is-printing", "is-printed");
     resultView.classList.remove("is-receipt-ready");
-    feed.style.setProperty("--receipt-height", (receipt.scrollHeight + 32) + "px");
-
-    if (reducedMotion) {
+    window.requestAnimationFrame(function () {
       completeReceiptPrint(scene, resultView);
-      return;
-    }
-
-    void scene.offsetWidth;
-    scene.classList.add("is-printing");
-    receiptTimer = window.setTimeout(function () {
-      completeReceiptPrint(scene, resultView);
-    }, receiptPrintDuration);
+    });
   }
 
-  function renderResult(cat) {
+  function splitStoryText(text) {
+    var fragments = String(text || "").match(/[^。！？!?；;]+[。！？!?；;]+|[^。！？!?；;]+$/g) || [];
+    var paragraphs = [];
+    var current = "";
+    var fragmentCount = 0;
+
+    fragments.forEach(function (fragment) {
+      var next = fragment.trim();
+      if (!next) return;
+      if (current && (current.length + next.length > 96 || fragmentCount >= 3)) {
+        paragraphs.push(current);
+        current = "";
+        fragmentCount = 0;
+      }
+      current += next;
+      fragmentCount += 1;
+    });
+    if (current) paragraphs.push(current);
+    return paragraphs.length ? paragraphs : [String(text || "")];
+  }
+
+  function getStoryBlocks(cat) {
+    var sourceBlocks = cat.storyBlocks || [{ text: cat.biography }];
+    return sourceBlocks.reduce(function (blocks, block) {
+      if (block.image) {
+        blocks.push(block);
+        return blocks;
+      }
+      splitStoryText(block.text).forEach(function (paragraph) {
+        blocks.push({ text: paragraph });
+      });
+      return blocks;
+    }, []);
+  }
+
+  function renderStory(cat) {
+    var container = document.getElementById("resultBiography");
+    var blocks = getStoryBlocks(cat);
+    container.replaceChildren();
+    blocks.forEach(function (block) {
+      if (block.image) {
+        var image = document.createElement("img");
+        image.src = block.image;
+        image.alt = cat.name + "的猫咪小传配图";
+        image.width = block.width;
+        image.height = block.height;
+        container.appendChild(image);
+        return;
+      }
+      var paragraph = document.createElement("p");
+      paragraph.textContent = block.text;
+      container.appendChild(paragraph);
+    });
+  }
+
+  function renderResult(result) {
+    var cat = result.cat || result;
     var resultType = document.getElementById("resultType");
     var surprise = document.getElementById("dazuoSurprise");
     var portrait = document.querySelector(".result-portrait-wrap");
 
+    currentResultCat = cat;
+    window.clearTimeout(catIntroTimer);
     resultType.textContent = cat.type;
     resultType.dataset.length = cat.type.length;
     document.getElementById("resultTitle").textContent = cat.title;
+    document.getElementById("resultBarcodeCode").textContent = "CATBTI · " + cat.type;
     renderPhotoCarousel(cat);
+    prepareCatIntroEffect(document.querySelector(".result-photo-stage"), cat);
     document.getElementById("resultStamp").textContent = cat.type;
     document.getElementById("resultCatName").textContent = cat.name;
-    document.getElementById("resultMbti").textContent = "MBTI 参考型 · " + cat.mbti;
-    document.getElementById("resultBiography").textContent = cat.biography;
     document.getElementById("resultPersonality").textContent = cat.personality;
-    document.getElementById("resultKeywords").innerHTML = cat.keywords.map(function (word) { return "<span>" + word + "</span>"; }).join("");
+    renderStory(cat);
     document.getElementById("resultQuote").textContent = cat.quote;
-    document.getElementById("receiptNumber").textContent = "CAT-" + String(config.cats.indexOf(cat) + 1).padStart(3, "0");
-    document.getElementById("receiptCode").textContent = "CATBTI-" + cat.type + "-" + cat.mbti;
     window.clearTimeout(surpriseTimer);
     window.clearTimeout(surpriseDelayTimer);
     portrait.classList.remove("is-dazuo-result", "is-gift-preview", "is-awaiting-surprise", "is-playing-surprise", "is-surprise-complete");
     surprise.classList.remove("is-active");
     surprise.setAttribute("aria-hidden", "true");
-    if (cat.type === "GENT") portrait.classList.add("is-dazuo-result", "is-gift-preview");
     showView("result");
     startReceiptPrint();
-    if (cat.type === "GENT") {
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        prepareDazuoSurprise(surprise, portrait);
-      } else {
-        surpriseDelayTimer = window.setTimeout(function () {
-          prepareDazuoSurprise(surprise, portrait);
-        }, receiptPrintDuration + 220);
-      }
-    }
   }
 
   function playTone(startTime, frequency, duration, type, gainLevel) {
@@ -398,25 +505,66 @@
   }
 
   function renderGallery() {
-    document.getElementById("catGrid").innerHTML = config.cats.map(function (cat, index) {
+    var groups = [
+      { key: "east", title: "东区", note: "东区出没的校园咪", types: ["LOVE-U", "KISS", "GLOW", "IDEA", "RUNNER"] },
+      { key: "west", title: "西区", note: "西区出没的校园咪", types: ["HIHI"] },
+      { key: "central", title: "中区", note: "中区出没的校园咪", types: ["DRINK"] },
+      { key: "north", title: "北区", note: "北区出没的校园咪", types: ["SALT", "CHIL", "DEVIL", "XXXL", "SONG", "LAMP"] },
+      { key: "ranger", title: "游侠", note: "喜欢在校园里到处巡游", types: ["EATR", "BOSS", "IDOL"] }
+    ];
+
+    function renderCatCard(cat) {
+      var index = config.cats.indexOf(cat);
       var image = getCatImages(cat)[0];
+      var imageMarkup = image
+        ? '<img src="' + image + '" alt="' + cat.name + '" loading="lazy" style="object-fit:' + (cat.images ? "cover" : (cat.imageFit || "cover")) + '">'
+        : '<span class="card-photo-placeholder"><i>ฅ</i><b>照片待补充</b></span>';
       return '<button class="cat-card" type="button" data-cat-index="' + index + '" aria-label="查看' + cat.name + '的资料">' +
-        '<span class="card-image"><img src="' + image + '" alt="' + cat.name + '" loading="lazy" style="object-fit:' + (cat.images ? "cover" : (cat.imageFit || "cover")) + '"><i>' + cat.type + "</i></span>" +
-        '<span class="card-copy"><small>' + cat.mbti + " · " + cat.title + "</small><strong>" + cat.name + '<span class="card-arrow" aria-hidden="true">↗</span></strong></span>' +
+        '<span class="card-image">' + imageMarkup + '<i>' + cat.type + "</i></span>" +
+        '<span class="card-copy"><small>' + cat.title + "</small><strong>" + cat.name + '<span class="card-arrow" aria-hidden="true">↗</span></strong></span>' +
         "</button>";
+    }
+
+    document.getElementById("catGrid").innerHTML = groups.map(function (group) {
+      var cats = group.types.map(function (type) {
+        return config.cats.find(function (cat) { return cat.type === type; });
+      }).filter(Boolean);
+      return '<section class="cat-region cat-region-' + group.key + '" aria-labelledby="region-' + group.key + '">' +
+        '<div class="region-heading"><span class="region-marker" aria-hidden="true"></span><div><h3 id="region-' + group.key + '">' + group.title + '</h3><p>' + group.note + '</p></div><strong>' + cats.length + ' 只</strong></div>' +
+        '<div class="cat-grid">' + cats.map(renderCatCard).join("") + '</div></section>';
     }).join("");
   }
 
   function openCatDialog(index) {
     var cat = config.cats[index];
     var image = getCatImages(cat)[0];
+    var imageMarkup = image
+      ? '<img class="dialog-cover" src="' + image + '" alt="' + cat.name + '" style="object-fit:contain">'
+      : '<span class="dialog-photo-placeholder"><i>ฅ</i><b>' + cat.name + '照片待补充</b></span>';
+    var effectName = ["peek", "bounce", "tilt", "float"][index % 4];
+    var specialMarkup = cat.introEffect === "big-face"
+      ? '<div class="cat-intro-effect" aria-hidden="true"><img src="images/updated-cats/zuoxiajiao-surprise-cutout.png" alt=""></div>'
+      : "";
+    var biographyMarkup = getStoryBlocks(cat).map(function (block) {
+      if (block.image) {
+        return '<img class="dialog-story-image" src="' + block.image + '" alt="' + cat.name + '的猫咪小传配图" loading="lazy">';
+      }
+      return "<p>" + block.text + "</p>";
+    }).join("");
     document.getElementById("dialogContent").innerHTML =
-      '<div class="dialog-image"><img src="' + image + '" alt="' + cat.name + '" style="object-fit:' + (cat.images ? "cover" : (cat.imageFit || "cover")) + '"><span>' + cat.type + "</span></div>" +
-      '<div class="dialog-copy"><small>' + cat.mbti + " · " + cat.title + "</small><h3>" + cat.name + "</h3>" +
-      '<section><h4>猫咪小传</h4><p>' + cat.biography + "</p></section>" +
-      '<section><h4>你可能是</h4><p>' + cat.personality + "</p></section>" +
-      '<div class="keyword-list">' + cat.keywords.map(function (word) { return "<span>" + word + "</span>"; }).join("") + "</div></div>";
-    document.getElementById("catDialog").showModal();
+      '<div class="dialog-image cat-effect-host effect-' + effectName + '">' + imageMarkup + specialMarkup + '<span>' + cat.type + "</span></div>" +
+      '<div class="dialog-copy"><small>' + cat.title + "</small><h3>" + cat.name + "</h3>" +
+      '<blockquote class="dialog-signature">' + cat.quote + "</blockquote>" +
+      '<section><h4>猫咪小传</h4>' + biographyMarkup + "</section>" +
+      '<section><h4>你可能是</h4><p>' + cat.personality + "</p></section></div>";
+    var dialog = document.getElementById("catDialog");
+    var host = document.querySelector(".dialog-image");
+    prepareCatIntroEffect(host, cat);
+    dialog.showModal();
+    window.requestAnimationFrame(function () {
+      host.classList.add("is-playing-dialog-effect");
+      playCatIntroEffect(host, cat, "dialog");
+    });
   }
 
   function closeDialog() {
@@ -424,18 +572,29 @@
   }
 
   fillConfiguredContent();
-  renderFacts();
   renderGallery();
   document.body.dataset.view = "home";
 
   var previewType = new URLSearchParams(window.location.search).get("result");
   var previewCat = config.cats.find(function (cat) { return cat.type === previewType; });
   if (previewCat) renderResult(previewCat);
+  else if (window.location.hash === "#cats") showView("gallery");
 
   document.getElementById("startButton").addEventListener("click", function () { startTest(true); });
-  document.getElementById("showCatsButton").addEventListener("click", function () { showView("gallery"); });
-  document.getElementById("galleryShortcut").addEventListener("click", function () { showView("gallery"); });
-  document.getElementById("resultGalleryButton").addEventListener("click", function () { showView("gallery"); });
+  document.getElementById("galleryShortcut").addEventListener("click", function () {
+    galleryReturnView = null;
+    document.getElementById("galleryBackButton").hidden = true;
+    showView("gallery");
+  });
+  document.getElementById("resultGalleryButton").addEventListener("click", function () {
+    galleryReturnView = "result";
+    document.getElementById("galleryBackButton").hidden = false;
+    showView("gallery");
+  });
+  document.getElementById("galleryBackButton").addEventListener("click", function () {
+    if (!galleryReturnView) return;
+    showView(galleryReturnView);
+  });
   document.getElementById("retryButton").addEventListener("click", function () { startTest(true); });
   document.getElementById("photoPrev").addEventListener("click", function () { showPhoto(currentPhotoIndex - 1); });
   document.getElementById("photoNext").addEventListener("click", function () { showPhoto(currentPhotoIndex + 1); });
