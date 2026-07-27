@@ -255,24 +255,36 @@
   }
 
   function splitStoryText(text) {
-    var fragments = String(text || "").match(/[^。！？!?；;]+[。！？!?；;]+|[^。！？!?；;]+$/g) || [];
     var paragraphs = [];
-    var current = "";
-    var fragmentCount = 0;
+    String(text || "").split(/\n\s*\n/).forEach(function (section) {
+      var fragments = section.match(/[^。！？!?；;]+[。！？!?；;]+|[^。！？!?；;]+$/g) || [];
+      var current = "";
+      var fragmentCount = 0;
 
-    fragments.forEach(function (fragment) {
-      var next = fragment.trim();
-      if (!next) return;
-      if (current && (current.length + next.length > 96 || fragmentCount >= 3)) {
-        paragraphs.push(current);
-        current = "";
-        fragmentCount = 0;
-      }
-      current += next;
-      fragmentCount += 1;
+      fragments.forEach(function (fragment) {
+        var next = fragment.trim();
+        if (!next) return;
+        if (current && (current.length + next.length > 96 || fragmentCount >= 3)) {
+          paragraphs.push(current);
+          current = "";
+          fragmentCount = 0;
+        }
+        current += next;
+        fragmentCount += 1;
+      });
+      if (current) paragraphs.push(current);
     });
-    if (current) paragraphs.push(current);
     return paragraphs.length ? paragraphs : [String(text || "")];
+  }
+
+  function renderPersonality(cat) {
+    var container = document.getElementById("resultPersonality");
+    container.replaceChildren();
+    splitStoryText(cat.personality).forEach(function (text) {
+      var paragraph = document.createElement("p");
+      paragraph.textContent = text;
+      container.appendChild(paragraph);
+    });
   }
 
   function getStoryBlocks(cat) {
@@ -325,7 +337,7 @@
     prepareCatIntroEffect(document.querySelector(".result-photo-stage"), cat);
     document.getElementById("resultStamp").textContent = cat.type;
     document.getElementById("resultCatName").textContent = cat.name;
-    document.getElementById("resultPersonality").textContent = cat.personality;
+    renderPersonality(cat);
     renderStory(cat);
     document.getElementById("resultQuote").textContent = cat.quote;
     window.clearTimeout(surpriseTimer);
@@ -551,12 +563,15 @@
       }
       return "<p>" + block.text + "</p>";
     }).join("");
+    var personalityMarkup = splitStoryText(cat.personality).map(function (text) {
+      return "<p>" + text + "</p>";
+    }).join("");
     document.getElementById("dialogContent").innerHTML =
       '<div class="dialog-image cat-effect-host effect-' + effectName + '">' + imageMarkup + specialMarkup + '<span>' + cat.type + "</span></div>" +
       '<div class="dialog-copy"><small>' + cat.title + "</small><h3>" + cat.name + "</h3>" +
       '<blockquote class="dialog-signature">' + cat.quote + "</blockquote>" +
       '<section><h4>猫咪小传</h4>' + biographyMarkup + "</section>" +
-      '<section><h4>你可能是</h4><p>' + cat.personality + "</p></section></div>";
+      '<section><h4>你可能是</h4>' + personalityMarkup + "</section></div>";
     var dialog = document.getElementById("catDialog");
     var host = document.querySelector(".dialog-image");
     prepareCatIntroEffect(host, cat);
