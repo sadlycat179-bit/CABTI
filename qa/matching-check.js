@@ -42,8 +42,8 @@ const expectedCats = {
   GLOW: ["青桔", "friendly", "active", "east", "adored"],
   IDEA: ["蛋黄", "friendly", "active", "east", "adored"],
   IDOL: ["饭包", "friendly", "observer", "roam", "freedom"],
-  DRINK: ["养乐多", "friendly", "active", "central", "adored"],
-  LAMP: ["桔子灯", "friendly", "active", "north", "adored"],
+  DRINK: ["养乐多", "friendly", "active", "north", "adored"],
+  LAMP: ["桔子灯", "friendly", "active", "north", "guard"],
   RUNNER: ["蛋饼", "cautious", "observer", "east", "freedom"],
 };
 
@@ -69,7 +69,7 @@ const expectedOptions = {
   "action-1": ["observer", "active"],
   "action-2": ["active", "observer"],
   "action-3": ["observer", "active"],
-  area: ["east", "west", "north", "central", "roam"],
+  area: ["east", "west", "north", "roam"],
   aspiration: ["social", "autonomy", "food"],
   "pursuit-social": ["guard", "adored"],
   "pursuit-autonomy": ["life", "freedom"],
@@ -94,7 +94,7 @@ assert(eastFood && eastFood.type !== "XXXL", "east fallback incorrectly returned
 const values = {
   attitude: ["friendly", "cautious"],
   action: ["active", "observer"],
-  area: ["east", "west", "north", "central", "roam"],
+  area: ["east", "west", "north", "roam"],
   pursuit: ["guard", "adored", "freedom", "life", "food"],
 };
 
@@ -115,4 +115,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("Both three-question dimensions passed all 16 majority combinations; 16 exact cat paths passed; 100 fallback combinations stayed in their selected area.");
+console.log("Both three-question dimensions passed all 16 majority combinations; 16 exact cat paths passed; 80 fallback combinations stayed in their selected area.");

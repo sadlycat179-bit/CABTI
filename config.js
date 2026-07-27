@@ -24,7 +24,7 @@ window.CATBTI_CONFIG = {
   traitLabels: {
     attitude: { friendly: "亲人", cautious: "怕人" },
     action: { active: "行动派", observer: "观察派" },
-    area: { east: "东区", west: "西区", north: "北区", central: "中区", roam: "我串来串去的" },
+    area: { east: "东区", west: "西区", north: "北区", roam: "我串来串去的" },
     pursuit: { guard: "守护", adored: "宠爱", freedom: "自由", life: "生活", food: "吃饭" }
   },
 
@@ -111,7 +111,6 @@ window.CATBTI_CONFIG = {
         { text: "东区", value: "east" },
         { text: "西区", value: "west" },
         { text: "北区", value: "north" },
-        { text: "中区", value: "central" },
         { text: "我串来串去的", value: "roam" }
       ]
     },
@@ -393,9 +392,9 @@ window.CATBTI_CONFIG = {
     {
       type: "DRINK",
       name: "养乐多",
-      title: "校园巡场官",
-      traits: { attitude: "friendly", action: "active", area: "central", pursuit: "adored" },
-      images: ["images/updated-cats/yangleduo-1.jpg", "images/updated-cats/yangleduo-2.jpg"],
+      title: "清爽小饮料",
+      traits: { attitude: "friendly", action: "active", area: "north", pursuit: "adored" },
+      images: ["images/updated-cats/yangleduo-new.jpg"],
       storyBlocks: [
         { text: "你与养乐多的匹配度最高。养乐多是一只去年十一月出现在学校的小狸花。刚出现时，它才两三个月大，很活泼好动，不害怕陌生人，对校园充满好奇，总是东奔西窜。" },
         { text: "养乐多长期在宿舍区域生活。从小和人类一起长大的它，总是对人类抱有几分好奇，也愿意与大家亲近。" },
@@ -404,14 +403,14 @@ window.CATBTI_CONFIG = {
       ],
       biography: "你与养乐多的匹配度最高。养乐多是一只去年十一月出现在学校的小狸花。刚出现时，它才两三个月大，很活泼好动，不害怕陌生人，对校园充满好奇，总是东奔西窜。养乐多长期在宿舍区域生活。从小和人类一起长大的它，总是对人类抱有几分好奇，也愿意与大家亲近。养乐多是一只很聪明的小猫。初来乍到不久，它就学会了如何与宿舍区的其他猫相处，也迅速学会了向人类撒娇卖萌、讨饭吃，并且记住了自己的名字。当你喊它‘养乐多，跟我吃饭去’，它就会屁颠屁颠地跟上你，是一只聪明的狸花宝宝。春去秋来，贪吃的养乐多也逐渐长成了一座小山，体型渐渐赶上了邻居话梅，导致总有人分不清这两只纯色狸花。养乐多心思单纯、天真可爱。抓它去绝育时，好奇心重的养乐多自己走进了那个从没见过的航空箱，简直是好奇心丢了蛋呀！",
       personality: "你是活泼开朗的活力型。你愿意与陌生事物打交道，对外界充满好奇心，总是活力满满。你以积极的心态看待世界，无忧无虑，每天都过着快乐而充实的生活。\n\n遇到困难时，你也总会勇往直前、不畏艰难，积极迎接挑战。",
-      keywords: ["亲人", "行动派", "中区", "宠爱"],
+      keywords: ["亲人", "行动派", "北区", "宠爱"],
       quote: "轻松一刻，来瓶养乐多！"
     },
     {
       type: "LAMP",
       name: "桔子灯",
       title: "慢热守望者",
-      traits: { attitude: "friendly", action: "active", area: "north", pursuit: "adored" },
+      traits: { attitude: "friendly", action: "active", area: "north", pursuit: "guard" },
       images: ["images/updated-cats/juzideng-new.png"],
       storyBlocks: [
         { text: "你与桔子灯的匹配度最高。桔子灯是四喜的孩子，是一只毛软软、叫声夹夹的玳瑁。它面相有点凶凶的，实际亲人好摸，是湖工猫二代、竹林四宝之一。" },
@@ -421,7 +420,7 @@ window.CATBTI_CONFIG = {
       ],
       biography: "你与桔子灯的匹配度最高。桔子灯是四喜的孩子，是一只毛软软、叫声夹夹的玳瑁。它面相有点凶凶的，实际亲人好摸，是湖工猫二代、竹林四宝之一。桔子灯小时候见人就跑，长大后逐渐变得粘人可撸，有时看见人还会像小狗一样叫，主动出击。桔子灯乐于与人类玩耍。就算只拿路边的一根草逗它，它也会玩得很起劲，给足情绪价值。它还常常主动蹭人，走两步就躺下撒娇，在地上翻滚，吸引你摸摸它柔软的毛毛。有时玩兴奋了，它还会轻咬你的手，再撒娇一样蹭蹭，表达开心与对你的喜爱。虽然桔子灯是四喜的孩子，但它的父亲是不是三宝，大家并不清楚。小时候，桔子灯常常受到三宝的欺负，被三宝抢饭吃。随着时间慢慢过去，桔子灯也长成了一只体格不容小觑的大猫。目前，它和三宝、四喜一同生活在礼堂旁，也能和三宝和睦相处了。",
       personality: "你是温暖的慢热型。你为人处世圆融，与多数人保持良好的人际关系。你总是能周到地考虑别人的感受、关心他人。\n\n但有时你太过在乎外界的看法，过度在意他人的评价，容易让自己陷入怀疑和不安。",
-      keywords: ["亲人", "行动派", "北区", "宠爱"],
+      keywords: ["亲人", "行动派", "北区", "守护"],
       quote: "人，不开心都要和咪说哦。"
     },
     {

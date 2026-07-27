@@ -520,8 +520,7 @@
     var groups = [
       { key: "east", title: "东区", note: "东区出没的校园咪", types: ["LOVE-U", "KISS", "GLOW", "IDEA", "RUNNER"] },
       { key: "west", title: "西区", note: "西区出没的校园咪", types: ["HIHI"] },
-      { key: "central", title: "中区", note: "中区出没的校园咪", types: ["DRINK"] },
-      { key: "north", title: "北区", note: "北区出没的校园咪", types: ["SALT", "CHIL", "DEVIL", "XXXL", "SONG", "LAMP"] },
+      { key: "north", title: "北区", note: "北区出没的校园咪", types: ["SALT", "CHIL", "DEVIL", "XXXL", "SONG", "DRINK", "LAMP"] },
       { key: "ranger", title: "游侠", note: "喜欢在校园里到处巡游", types: ["EATR", "BOSS", "IDOL"] }
     ];
 
@@ -529,7 +528,7 @@
       var index = config.cats.indexOf(cat);
       var image = getCatImages(cat)[0];
       var imageMarkup = image
-        ? '<img src="' + image + '" alt="' + cat.name + '" loading="lazy" style="object-fit:' + (cat.images ? "cover" : (cat.imageFit || "cover")) + '">'
+        ? '<img src="' + image + '" alt="' + cat.name + '" loading="lazy" style="object-fit:contain">'
         : '<span class="card-photo-placeholder"><i>ฅ</i><b>照片待补充</b></span>';
       return '<button class="cat-card" type="button" data-cat-index="' + index + '" aria-label="查看' + cat.name + '的资料">' +
         '<span class="card-image">' + imageMarkup + '<i>' + cat.type + "</i></span>" +
