@@ -844,7 +844,7 @@ body.is-secret-surprise-open .danke-queen-pop { opacity: 0; visibility: hidden; 
 .cat-region { padding-top: 5px; }
 .region-heading { display: flex; align-items: center; gap: 13px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid rgba(82, 104, 90, .22); }
 .region-marker { width: 13px; height: 31px; border: 2px solid #405545; background: #e3ac6f; box-shadow: 3px 3px 0 #d06c4c; transform: rotate(-3deg); }
-.cat-region-west .region-marker { background: #9bc8c1; }.cat-region-central .region-marker { background: #abd7fb; }.cat-region-north .region-marker { background: #e58a72; }.cat-region-ranger .region-marker { background: #9cad72; }
+.cat-region-west .region-marker { background: #9bc8c1; }.cat-region-north .region-marker { background: #e58a72; }.cat-region-ranger .region-marker { background: #9cad72; }
 .region-heading h3 { margin: 0; color: #405545; font-family: var(--receipt-slab); font-size: 28px; }
 .region-heading p { margin: 1px 0 0; color: var(--brown-soft); font-size: 13px; }
 .region-heading > strong { margin-left: auto; color: #d06c4c; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; }
@@ -1107,6 +1107,7 @@ body[data-view="result"] { color: #57463d; background: #f7d9a1; font-family: "Mi
 .result-story h3::before { display: none; content: ""; }
 .result-personality p,
 .result-story p { color: #66574f; font-family: "Microsoft YaHei UI", "PingFang SC", sans-serif; font-size: 16px; line-height: 1.95; }
+.result-personality-content p + p { margin-top: 12px; }
 .result-story-content img { padding: 7px; background: #f6c98c; }
 .claim-notice { background: #f4825d; font-family: "Microsoft YaHei UI", "PingFang SC", sans-serif; font-weight: 800; }
 .result-actions .button { font-family: "Microsoft YaHei UI", "PingFang SC", sans-serif; font-weight: 800; }

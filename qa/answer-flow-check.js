@@ -29,6 +29,8 @@ const { chromium } = require(process.argv[2]);
 
   const xiaoxiao = await runPath([0, 1, 0, 0, 1, 0, 2, 1, 0]);
   const eastFood = await runPath([0, 1, 0, 1, 0, 1, 0, 2]);
+  const yangleduo = await runPath([0, 1, 0, 1, 0, 1, 2, 0, 1]);
+  const juzideng = await runPath([0, 1, 0, 1, 0, 1, 2, 0, 0]);
 
   if (xiaoxiao.type !== "CHIL" || xiaoxiao.name !== "笑笑") {
     throw new Error(`笑笑路径错误: ${JSON.stringify(xiaoxiao)}`);
@@ -36,8 +38,14 @@ const { chromium } = require(process.argv[2]);
   if (eastFood.type === "XXXL" || eastFood.name === "三宝") {
     throw new Error(`东区路径仍错误返回三宝: ${JSON.stringify(eastFood)}`);
   }
+  if (yangleduo.type !== "DRINK" || yangleduo.name !== "养乐多") {
+    throw new Error(`养乐多路径错误: ${JSON.stringify(yangleduo)}`);
+  }
+  if (juzideng.type !== "LAMP" || juzideng.name !== "桔子灯") {
+    throw new Error(`桔子灯路径错误: ${JSON.stringify(juzideng)}`);
+  }
   if (errors.length) throw new Error(errors.join("\n"));
 
-  console.log(JSON.stringify({ xiaoxiao, eastFood }, null, 2));
+  console.log(JSON.stringify({ xiaoxiao, eastFood, yangleduo, juzideng }, null, 2));
   await browser.close();
 })();
