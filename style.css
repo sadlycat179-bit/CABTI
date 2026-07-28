@@ -920,9 +920,21 @@ footer { min-height: 70px; display: grid; place-items: center; padding: 20px; co
   .duel-cat { top: auto; bottom: 104px; width: auto; height: min(42vh, 330px); }
   .duel-cat-dazuo { transform: translate(-98%, 40%) scale(.2) rotate(-8deg); }
   .duel-cat-laba { transform: translate(-2%, 40%) scale(.2) rotate(8deg); }
-  .surprise-caption { top: 12%; bottom: auto; left: 50%; width: min(76vw, 280px); min-height: 48px; padding: 13px 17px 24px; font-size: 13px; }
-  .dazuo-surprise.is-dazuo-speak .surprise-caption,
-  .dazuo-surprise.is-laba-speak .surprise-caption { left: 50%; top: 12%; }
+  .surprise-caption { top: 17%; bottom: auto; left: 50%; width: min(76vw, 280px); min-height: 48px; padding: 13px 17px 24px; font-size: 13px; }
+  .dazuo-surprise.is-dazuo-speak .surprise-caption {
+    --caption-shape-outer: polygon(8% 0, 92% 0, 95% .6%, 97.4% 2.4%, 99% 5.5%, 99.8% 10%, 100% 16%, 100% 64%, 99.8% 69%, 99.2% 73%, 98% 76.5%, 96% 79%, 93% 81%, 90% 82%, 24% 82%, 18% 100%, 12% 82%, 8% 82%, 5% 81%, 2.8% 79%, 1.2% 76.5%, .3% 71%, 0 64%, 0 16%, .2% 10%, 1% 5.5%, 2.6% 2.4%, 5% .6%);
+    --caption-shape-red: polygon(8% 0, 92% 0, 95% .6%, 97.4% 2.4%, 99% 5.5%, 99.8% 10%, 100% 16%, 100% 62%, 99.8% 67%, 99.2% 71%, 98% 74.5%, 96% 77%, 93% 79%, 90% 80%, 23.3% 80%, 17% 100%, 10.9% 80%, 8% 80%, 5% 79%, 2.8% 77%, 1.2% 74.5%, .3% 69%, 0 62%, 0 16%, .2% 10%, 1% 5.5%, 2.6% 2.4%, 5% .6%);
+    --caption-shape-inner: polygon(8% 0, 92% 0, 95% .6%, 97.4% 2.4%, 99% 5.5%, 99.8% 10%, 100% 16%, 100% 60%, 99.8% 65%, 99.2% 69%, 98% 72.5%, 96% 75%, 93% 77%, 90% 78%, 22.8% 78%, 16.5% 100%, 10.2% 78%, 8% 78%, 5% 77%, 2.8% 75%, 1.2% 72.5%, .3% 67%, 0 60%, 0 16%, .2% 10%, 1% 5.5%, 2.6% 2.4%, 5% .6%);
+    left: 50%;
+    top: 17%;
+  }
+  .dazuo-surprise.is-laba-speak .surprise-caption {
+    --caption-shape-outer: polygon(8% 0, 92% 0, 95% .6%, 97.4% 2.4%, 99% 5.5%, 99.8% 10%, 100% 16%, 100% 64%, 99.8% 69%, 99.2% 73%, 98% 76.5%, 96% 79%, 93% 81%, 90% 82%, 88% 82%, 82% 100%, 76% 82%, 8% 82%, 5% 81%, 2.8% 79%, 1.2% 76.5%, .3% 71%, 0 64%, 0 16%, .2% 10%, 1% 5.5%, 2.6% 2.4%, 5% .6%);
+    --caption-shape-red: polygon(8% 0, 92% 0, 95% .6%, 97.4% 2.4%, 99% 5.5%, 99.8% 10%, 100% 16%, 100% 62%, 99.8% 67%, 99.2% 71%, 98% 74.5%, 96% 77%, 93% 79%, 90% 80%, 89.1% 80%, 83% 100%, 76.7% 80%, 8% 80%, 5% 79%, 2.8% 77%, 1.2% 74.5%, .3% 69%, 0 62%, 0 16%, .2% 10%, 1% 5.5%, 2.6% 2.4%, 5% .6%);
+    --caption-shape-inner: polygon(8% 0, 92% 0, 95% .6%, 97.4% 2.4%, 99% 5.5%, 99.8% 10%, 100% 16%, 100% 60%, 99.8% 65%, 99.2% 69%, 98% 72.5%, 96% 75%, 93% 77%, 90% 78%, 89.8% 78%, 83.5% 100%, 77.2% 78%, 8% 78%, 5% 77%, 2.8% 75%, 1.2% 72.5%, .3% 67%, 0 60%, 0 16%, .2% 10%, 1% 5.5%, 2.6% 2.4%, 5% .6%);
+    left: 50%;
+    top: 17%;
+  }
   .surprise-end-button { bottom: 20px; min-width: 112px; min-height: 38px; padding: 5px 12px; border-width: 3px; font-size: 18px; box-shadow: 0 4px 0 rgba(5, 5, 5, .9), 0 8px 14px rgba(76, 42, 15, .14), inset 7px -7px 0 rgba(242, 180, 42, .18), inset -8px 8px 0 rgba(255, 255, 255, .45); }
   .surprise-end-button:active, .surprise-end-button.is-pressing { transform: translate(-50%, 22px) scale(.96); box-shadow: 0 1px 0 rgba(5, 5, 5, .9), 0 5px 10px rgba(76, 42, 15, .14), inset 6px -6px 0 rgba(242, 180, 42, .25), inset -7px 7px 0 rgba(255, 255, 255, .4); }
   .end-paw { width: 25px; height: 25px; }
@@ -943,12 +955,12 @@ footer { min-height: 70px; display: grid; place-items: center; padding: 20px; co
   .danke-heart { width: clamp(176px, 58vw, 300px); }
   .danke-queen-bubble {
     left: 50%;
-    top: calc(52% - 132px);
-    width: min(78vw, 280px);
-    min-height: 50px;
+    top: calc(52% - 126px);
+    width: min(62vw, 230px);
+    min-height: 42px;
     max-width: none;
-    padding: 13px 17px 25px;
-    font-size: 13px;
+    padding: 10px 14px 20px;
+    font-size: 12px;
     transform: translate(-50%, 10px) scale(.88);
   }
   .danke-queen-pop.is-queen-speaking .danke-queen-bubble { transform: translate(-50%, 0) scale(1); }
