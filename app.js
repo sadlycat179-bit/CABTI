@@ -13,6 +13,7 @@
   var surpriseInteractionTimer = null;
   var surpriseSettleTimer = null;
   var currentSurpriseAudio = null;
+  var surpriseAudioCache = {};
   var receiptTimer = null;
   var currentPhotoIndex = 0;
   var currentPhotoCount = 0;
@@ -750,7 +751,9 @@
       currentSurpriseAudio.pause();
       currentSurpriseAudio.currentTime = 0;
     }
-    currentSurpriseAudio = new Audio(source);
+    warmSurpriseCatAudio(catKey);
+    currentSurpriseAudio = surpriseAudioCache[catKey];
+    currentSurpriseAudio.currentTime = 0;
     currentSurpriseAudio.volume = catKey === "dazuo" ? 0.72 : 0.68;
     document.body.dataset.surpriseCatAudio = catKey + "-starting";
     return currentSurpriseAudio.play().then(function () {
@@ -760,6 +763,15 @@
       document.body.dataset.surpriseCatAudio = catKey + "-blocked";
       return false;
     });
+  }
+
+  function warmSurpriseCatAudio(catKey) {
+    var source = catKey === "dazuo" ? "audio/dazuo-interact.mp3" : "audio/laba-interact.mp3";
+    if (!surpriseAudioCache[catKey]) {
+      surpriseAudioCache[catKey] = new Audio(source);
+      surpriseAudioCache[catKey].preload = "auto";
+    }
+    if (surpriseAudioCache[catKey].readyState === 0) surpriseAudioCache[catKey].load();
   }
 
   function playGiftHintSound() {
@@ -865,6 +877,7 @@
 
     surprise.setAttribute("aria-hidden", "false");
     resetDazuoSurprise(surprise);
+    ["dazuo", "laba"].forEach(warmSurpriseCatAudio);
     void surprise.offsetWidth;
     surprise.classList.add("is-ready");
     playGiftHintSound();
@@ -1160,6 +1173,10 @@
       endDazuoSurprise(event.currentTarget, portrait);
     }
   });
+  document.getElementById("dazuoSurprise").addEventListener("pointerdown", function (event) {
+    var catButton = event.target.closest("[data-duel-cat]");
+    if (catButton) warmSurpriseCatAudio(catButton.dataset.duelCat);
+  }, { passive: true });
   document.getElementById("dazuoSurprise").addEventListener("keydown", function (event) {
     if (event.key !== "Enter" && event.key !== " ") return;
     if (event.target.closest(".gift-box")) {

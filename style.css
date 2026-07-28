@@ -41,6 +41,20 @@ body {
 button, input { font: inherit; }
 button { color: inherit; }
 button:focus-visible, [role="radio"]:focus-visible { outline: 3px solid rgba(237, 135, 92, 0.35); outline-offset: 3px; }
+button,
+[role="button"],
+.disc-peek-cat,
+.duel-cat,
+.gift-box,
+.surprise-end-button,
+.danke-queen-pop,
+.danke-queen-cat,
+.result-heading p.is-danke-trigger {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+  touch-action: manipulation;
+}
 img { display: block; max-width: 100%; }
 
 .ambient {
@@ -174,7 +188,7 @@ main { min-height: calc(100vh - 158px); outline: none; }
   transition-timing-function: cubic-bezier(.55, 0, .85, .35);
 }
 .disc-peek-cat:focus-visible {
-  filter: drop-shadow(0 0 0 #fff) drop-shadow(0 0 5px rgba(209, 92, 54, .8));
+  outline: none;
 }
 .disc-peek-cat img {
   display: block;
@@ -391,13 +405,13 @@ body.is-secret-surprise-open .dazuo-surprise { opacity: 1; visibility: visible; 
 }
 .surprise-end-button { position: absolute; left: 50%; bottom: 24px; z-index: 10; display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-width: 126px; min-height: 42px; padding: 6px 15px; border: 3px solid #050505; border-radius: 999px; color: #050505; background: linear-gradient(145deg, rgba(255, 216, 77, .92) 0%, rgba(255, 246, 201, .9) 55%, rgba(255, 253, 244, .9) 100%); box-shadow: 0 5px 0 rgba(5, 5, 5, .9), 0 10px 18px rgba(76, 42, 15, .15), inset 8px -8px 0 rgba(242, 180, 42, .18), inset -10px 9px 0 rgba(255, 255, 255, .45); font-size: 20px; font-weight: 1000; line-height: 1; letter-spacing: .02em; cursor: pointer; opacity: 0; transform: translate(-50%, 18px) scale(.92); pointer-events: none; transition: transform .12s ease, box-shadow .12s ease, opacity .18s ease; will-change: transform, opacity; }
 .surprise-end-button::after { content: ""; position: absolute; right: 15px; top: 8px; width: 31px; height: 10px; border-top: 4px solid rgba(255, 255, 255, .86); border-radius: 50%; transform: rotate(22deg); opacity: .75; }
-.surprise-end-button:focus-visible { outline: 4px solid rgba(255, 245, 180, .95); outline-offset: 8px; }
+.surprise-end-button:focus-visible { outline: none; }
 .surprise-end-button:active, .surprise-end-button.is-pressing { transform: translate(-50%, 23px) scale(.96); box-shadow: 0 1px 0 rgba(5, 5, 5, .9), 0 6px 12px rgba(76, 42, 15, .14), inset 7px -7px 0 rgba(242, 180, 42, .25), inset -8px 8px 0 rgba(255, 255, 255, .4); opacity: .95; }
 .end-paw { display: block; width: 29px; height: 29px; object-fit: contain; flex: 0 0 auto; pointer-events: none; }
 .gift-box { position: absolute; left: 50%; top: 57%; z-index: 6; width: min(60vw, 430px); aspect-ratio: 1; transform: translate(-50%, -50%); transform-origin: 50% 76%; }
 .gift-box > img { display: block; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 20px 22px rgba(40, 22, 16, .24)); pointer-events: none; user-select: none; }
 .gift-box[role="button"] { cursor: pointer; pointer-events: auto; }
-.gift-box[role="button"]:focus-visible { outline: 4px solid rgba(255, 245, 180, .95); outline-offset: 8px; }
+.gift-box[role="button"]:focus-visible { outline: none; }
 .dazuo-surprise.is-ready .surprise-glow { opacity: .72; transform: translate(-50%, -50%) scale(.92); transition: opacity .45s ease, transform .45s ease; }
 .dazuo-surprise.is-ready .gift-box { animation: gift-arrive .5s cubic-bezier(.2, .86, .2, 1) both, gift-invite-shake 1.8s ease-in-out .58s infinite; }
 .dazuo-surprise.is-ready:not(.is-active) .gift-whisper { animation: gift-whisper-float 2.6s ease-in-out .35s infinite both; }
@@ -575,7 +589,10 @@ body[data-view="result"] .result-view.is-active .danke-queen-pop.is-queen-speaki
   animation: danke-fullscreen-glow 2.3s ease both;
 }
 body.is-secret-surprise-open .danke-queen-pop { opacity: 0; visibility: hidden; pointer-events: none; }
-.danke-queen-pop:focus-visible { outline: 3px solid rgba(244, 102, 156, .48); outline-offset: 5px; border-radius: 20px; }
+.dazuo-surprise button:focus,
+.danke-queen-pop:focus,
+.danke-queen-cat:focus { outline: none; }
+.danke-queen-pop:focus-visible { outline: none; }
 .danke-queen-cat {
   position: absolute;
   left: 50%;
@@ -670,44 +687,49 @@ body.is-secret-surprise-open .danke-queen-pop { opacity: 0; visibility: hidden; 
 .danke-queen-pop.is-queen-bursting .danke-particles i:nth-child(2n) { animation-delay: .03s; }
 .danke-queen-pop.is-queen-bursting .danke-particles i:nth-child(3n) { animation-delay: .06s; }
 .danke-queen-bubble {
+  --caption-shape-outer: polygon(8% 0, 92% 0, 95% .6%, 97.4% 2.4%, 99% 5.5%, 99.8% 10%, 100% 16%, 100% 64%, 99.8% 69%, 99.2% 73%, 98% 76.5%, 96% 79%, 93% 81%, 90% 82%, 24% 82%, 18% 100%, 12% 82%, 8% 82%, 5% 81%, 2.8% 79%, 1.2% 76.5%, .3% 71%, 0 64%, 0 16%, .2% 10%, 1% 5.5%, 2.6% 2.4%, 5% .6%);
+  --caption-shape-red: polygon(8% 0, 92% 0, 95% .6%, 97.4% 2.4%, 99% 5.5%, 99.8% 10%, 100% 16%, 100% 62%, 99.8% 67%, 99.2% 71%, 98% 74.5%, 96% 77%, 93% 79%, 90% 80%, 23.3% 80%, 17% 100%, 10.9% 80%, 8% 80%, 5% 79%, 2.8% 77%, 1.2% 74.5%, .3% 69%, 0 62%, 0 16%, .2% 10%, 1% 5.5%, 2.6% 2.4%, 5% .6%);
+  --caption-shape-inner: polygon(8% 0, 92% 0, 95% .6%, 97.4% 2.4%, 99% 5.5%, 99.8% 10%, 100% 16%, 100% 60%, 99.8% 65%, 99.2% 69%, 98% 72.5%, 96% 75%, 93% 77%, 90% 78%, 22.8% 78%, 16.5% 100%, 10.2% 78%, 8% 78%, 5% 77%, 2.8% 75%, 1.2% 72.5%, .3% 67%, 0 60%, 0 16%, .2% 10%, 1% 5.5%, 2.6% 2.4%, 5% .6%);
   position: absolute;
   left: calc(50% + clamp(38px, 7vw, 86px));
   top: calc(52% - clamp(120px, 14vw, 174px));
   bottom: auto;
   z-index: 6;
-  width: max-content;
-  max-width: min(235px, calc(100vw - 140px));
-  padding: 9px 14px;
-  border: 3px solid #b72623;
-  border-radius: 999px;
+  width: min(36vw, 315px);
+  min-height: 58px;
+  display: grid;
+  place-items: center;
+  padding: 17px 25px 29px;
+  border: 0;
   color: #8c2836;
-  background: #fffdf8;
-  box-shadow:
-    0 0 0 5px #ffd45c,
-    0 0 0 8px rgba(255, 253, 248, .96),
-    0 10px 0 rgba(183, 38, 35, .14),
-    0 17px 26px rgba(104, 48, 68, .14);
+  background: #ffad00;
+  clip-path: var(--caption-shape-outer);
+  filter: drop-shadow(0 10px 0 rgba(255, 173, 0, .24)) drop-shadow(0 17px 18px rgba(104, 48, 68, .14));
   font-size: 15px;
   font-weight: 1000;
-  line-height: 1.25;
+  line-height: 1.35;
   white-space: nowrap;
   opacity: 0;
   transform: translate(-18px, 14px) scale(.88);
   transition: opacity .22s ease, transform .28s cubic-bezier(.2, .9, .25, 1.18);
   pointer-events: none;
+  isolation: isolate;
 }
 .danke-queen-bubble::before {
   content: "";
   position: absolute;
-  left: 16px;
-  bottom: -11px;
-  width: 18px;
-  height: 18px;
-  border-right: 3px solid #b72623;
-  border-bottom: 3px solid #b72623;
-  background: #fffdf8;
-  box-shadow: 4px 4px 0 #ffd45c, 7px 7px 0 rgba(255, 253, 248, .96);
-  transform: rotate(45deg);
+  inset: 5px;
+  z-index: -2;
+  background: #b72623;
+  clip-path: var(--caption-shape-red);
+}
+.danke-queen-bubble::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  z-index: -1;
+  background: rgba(255, 253, 245, .98);
+  clip-path: var(--caption-shape-inner);
 }
 .danke-queen-pop.is-queen-speaking .danke-queen-bubble { opacity: 1; transform: translate(0, 0) scale(1); }
 @keyframes danke-corner-float {
@@ -919,9 +941,19 @@ footer { min-height: 70px; display: grid; place-items: center; padding: 20px; co
   .danke-queen-cat { width: clamp(112px, 31vw, 168px); top: 53%; }
   .danke-throne { width: clamp(300px, 92vw, 430px); top: 56%; }
   .danke-heart { width: clamp(176px, 58vw, 300px); }
-  .danke-queen-bubble { left: calc(50% + 18px); top: calc(52% - 132px); bottom: auto; max-width: min(250px, calc(100vw - 34px)); padding: 8px 12px; font-size: 13px; transform: translate(-18px, 10px) scale(.88); }
-  .danke-queen-pop.is-queen-speaking .danke-queen-bubble { transform: translate(-18px, 0) scale(1); }
-  .danke-queen-bubble::before { left: 18px; }
+  .danke-queen-bubble {
+    left: 50%;
+    top: calc(52% - 132px);
+    width: min(78vw, 280px);
+    min-height: 50px;
+    max-width: none;
+    padding: 13px 17px 25px;
+    font-size: 13px;
+    transform: translate(-50%, 10px) scale(.88);
+  }
+  .danke-queen-pop.is-queen-speaking .danke-queen-bubble { transform: translate(-50%, 0) scale(1); }
+  .danke-queen-bubble::before { inset: 5px; }
+  .danke-queen-bubble::after { inset: 8px; }
   .danke-particles i:nth-child(1) { --tx: -54px; --ty: -34px; }
   .danke-particles i:nth-child(2) { --tx: 54px; --ty: -38px; }
   .danke-particles i:nth-child(3) { --tx: -60px; --ty: 4px; }
@@ -1249,8 +1281,7 @@ body[data-view="result"] { color: #57463d; background: #f7d9a1; font-family: "Mi
   box-shadow: 0 3px 0 rgba(211, 92, 60, .2), 0 8px 18px rgba(249, 130, 93, .2);
 }
 .result-heading p.is-danke-trigger:focus-visible {
-  outline: 3px solid rgba(244, 102, 156, .42);
-  outline-offset: 5px;
+  outline: none;
 }
 .result-barcode {
   width: min(280px, 80%);
