@@ -7,7 +7,7 @@
   <meta name="description" content="CATBTI HBUT 校园猫格测试">
   <title>CATBTI · HBUT 校园猫格测试</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='24' font-size='24'%3E%F0%9F%90%BE%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20260729-dankequeen11">
 </head>
 <body>
   <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -38,6 +38,12 @@
         </div>
       </div>
       <div class="hero-visual">
+        <button class="disc-peek-cat disc-peek-dazuo" type="button" data-peek-cat="dazuo" aria-label="发现圆边偷看的大佐，点一下让它躲回去" aria-hidden="true" tabindex="-1">
+          <img src="images/cover-peek-dazuo-radial-v2.png?v=20260728-radial2" alt="" decoding="async">
+        </button>
+        <button class="disc-peek-cat disc-peek-laba" type="button" data-peek-cat="laba" aria-label="发现圆边偷看的喇叭，点一下让它躲回去" aria-hidden="true" tabindex="-1">
+          <img src="images/cover-peek-laba-radial-v2.png?v=20260728-radial2" alt="" decoding="async">
+        </button>
         <div class="hero-cover-frame">
           <img src="images/updated-cats/cover.png" alt="四只 HBUT 校园猫咪的可爱合照插画">
           <span class="cover-sticker" aria-hidden="true">HBUT<br>CAT CLUB</span>
@@ -94,12 +100,24 @@
             <div class="photo-pagination" id="photoPagination" aria-label="照片页码"></div>
             <span class="type-stamp" id="resultStamp"></span>
             <div class="dazuo-surprise" id="dazuoSurprise" aria-hidden="true">
-              <button class="surprise-start" id="dazuoSurpriseStart" type="button" aria-label="打开正在轻轻晃动的大佐礼盒"><span>拆开礼物</span></button>
               <div class="surprise-glow"></div>
-              <div class="jumping-dazuo" aria-hidden="true">
-                <img src="images/gent-dazuo.png" alt="">
+              <div class="gift-whisper" aria-hidden="true">似乎有什么东西在里面</div>
+              <div class="cat-duel-stage" aria-live="polite">
+                <button class="duel-cat duel-cat-dazuo" type="button" data-duel-cat="dazuo" aria-label="点击大佐">
+                  <img src="images/surprise-dazuo.png" alt="大佐">
+                </button>
+                <button class="duel-cat duel-cat-laba" type="button" data-duel-cat="laba" aria-label="点击喇叭">
+                  <img src="images/surprise-laba.png" alt="喇叭">
+                </button>
+                <div class="surprise-caption" id="surpriseCaption">
+                  <span class="surprise-caption-copy">礼盒里好像有猫在讲话……</span>
+                </div>
+                <button class="surprise-end-button" id="surpriseEndButton" type="button" aria-label="结束惊喜">
+                  <img class="end-paw" src="images/end-paw.png" alt="" aria-hidden="true">
+                  <span>END</span>
+                </button>
               </div>
-              <div class="gift-box" aria-hidden="true">
+              <div class="gift-box" role="button" tabindex="0" aria-label="打开礼盒">
                 <img src="images/dazuo-gift-box.png" alt="">
               </div>
               <span class="spark spark-1">✦</span>
@@ -110,6 +128,12 @@
               <span class="spark spark-6">✧</span>
               <span class="spark spark-7">✦</span>
               <span class="spark spark-8">✧</span>
+              <span class="spark spark-9">✦</span>
+              <span class="spark spark-10">✧</span>
+              <span class="spark spark-11">✦</span>
+              <span class="spark spark-12">✧</span>
+              <span class="spark spark-13">✦</span>
+              <span class="spark spark-14">✧</span>
               <span class="confetti confetti-1"></span>
               <span class="confetti confetti-2"></span>
               <span class="confetti confetti-3"></span>
@@ -118,6 +142,14 @@
               <span class="confetti confetti-6"></span>
               <span class="confetti confetti-7"></span>
               <span class="confetti confetti-8"></span>
+              <span class="confetti confetti-9"></span>
+              <span class="confetti confetti-10"></span>
+              <span class="confetti confetti-11"></span>
+              <span class="confetti confetti-12"></span>
+              <span class="confetti confetti-13"></span>
+              <span class="confetti confetti-14"></span>
+              <span class="confetti confetti-15"></span>
+              <span class="confetti confetti-16"></span>
               <span class="soft-boom"></span>
             </div>
           </div>
@@ -147,6 +179,16 @@
           <button class="button button-primary" id="retryButton" type="button" data-content="site.retryButton"></button>
           <button class="button button-secondary" id="resultGalleryButton" type="button" data-content="site.galleryButton"></button>
         </div>
+        <button class="danke-queen-pop" id="dankeQueenPop" type="button" aria-label="queen surprise">
+          <span class="danke-heart" aria-hidden="true"></span>
+          <img class="danke-throne" src="images/danke-queen-throne.png?v=20260729-queen1" alt="" aria-hidden="true">
+          <span class="danke-particles" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i>
+          </span>
+          <img class="danke-queen-cat" src="images/danke-queen-royal.png?v=20260729-queen1" alt="Danke queen">
+          <span class="danke-queen-bubble">QUEEN never cry&#65281;&#128081;</span>
+        </button>
       </div>
         <section class="community-panel" aria-labelledby="communityTitle">
           <div class="community-heading">
@@ -220,6 +262,6 @@
 
   <script src="config.js"></script>
   <script src="matcher.js"></script>
-  <script src="app.js"></script>
+  <script src="app.js?v=20260729-dankequeen9"></script>
 </body>
 </html>

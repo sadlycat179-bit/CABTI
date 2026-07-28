@@ -9,6 +9,10 @@
   var audioContext = null;
   var surpriseTimer = null;
   var surpriseDelayTimer = null;
+  var giftHintTimer = null;
+  var surpriseInteractionTimer = null;
+  var surpriseSettleTimer = null;
+  var currentSurpriseAudio = null;
   var receiptTimer = null;
   var currentPhotoIndex = 0;
   var currentPhotoCount = 0;
@@ -16,7 +20,23 @@
   var galleryReturnView = null;
   var catIntroTimer = null;
   var dialogEffectTimer = null;
+  var dankeQueenTimer = null;
+  var dankeQueenEntryTimer = null;
+  var dankeQueenInteractTimer = null;
+  var dankeQueenParticleTimer = null;
+  var currentDankeQueenAudio = null;
+  var discPeekResizeFrame = null;
+  var discPeekShowTimer = null;
+  var discPeekHideTimer = null;
+  var discPeekActiveCat = null;
+  var discPeekLastCat = null;
+  var discPeekAngles = [-165, -150, -135, -120, -105, -90, -75, -60, -45, -30, -15];
+  var discPeekStates = {
+    dazuo: { angle: null, lastAngle: null, firstAngle: -90, contactX: 0.485, widthRatio: 0.219, coverInsetRatio: 0.56 },
+    laba: { angle: null, lastAngle: null, firstAngle: -15, contactX: 0.496, widthRatio: 0.231, coverInsetRatio: 0.57 }
+  };
   var receiptPrintDuration = 2800;
+  var secretSurpriseChance = 0.08;
 
   function getByPath(object, path) {
     return path.split(".").reduce(function (value, key) { return value && value[key]; }, object);
@@ -35,8 +55,222 @@
       view.classList.toggle("is-active", view.id === name + "View");
     });
     document.body.dataset.view = name;
+    if (name === "home") resumeDiscPeeks(650);
+    else suspendDiscPeek();
     window.scrollTo(0, 0);
     document.getElementById("app").focus({ preventScroll: true });
+  }
+
+  function prefersReducedMotion() {
+    return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  function randomDiscPeekDelay(minimum, maximum) {
+    return minimum + Math.round(Math.random() * (maximum - minimum));
+  }
+
+  function getDiscPeek(catKey) {
+    return document.querySelector('[data-peek-cat="' + catKey + '"]');
+  }
+
+  function angleDistance(first, second) {
+    var difference = Math.abs(first - second) % 360;
+    return Math.min(difference, 360 - difference);
+  }
+
+  function chooseDiscPeekAngle(catKey) {
+    var state = discPeekStates[catKey];
+
+    if (state.firstAngle !== null) {
+      var firstAngle = state.firstAngle;
+      state.firstAngle = null;
+      return firstAngle;
+    }
+
+    var candidates = discPeekAngles.filter(function (angle) {
+      var differentFromLast = state.lastAngle === null || angleDistance(angle, state.lastAngle) >= 42;
+      return differentFromLast;
+    });
+    if (!candidates.length) candidates = discPeekAngles.slice();
+    return candidates[Math.floor(Math.random() * candidates.length)];
+  }
+
+  function clampDiscPeekSize(value, minimum, maximum) {
+    return Math.max(minimum, Math.min(maximum, value));
+  }
+
+  function getDiscPeekWidth(catKey, frameSize) {
+    var state = discPeekStates[catKey];
+    var minimum = catKey === "laba" ? 72 : 68;
+    var maximum = catKey === "laba" ? 112 : 106;
+    return clampDiscPeekSize(frameSize * state.widthRatio, minimum, maximum);
+  }
+
+  function layoutDiscPeek(catKey) {
+    var peek = getDiscPeek(catKey);
+    var state = discPeekStates[catKey];
+    var visual = document.querySelector(".hero-visual");
+    var frame = document.querySelector(".hero-cover-frame");
+    var image = peek && peek.querySelector("img");
+    if (!peek || !visual || !frame || !image || !image.naturalWidth || state.angle === null) return false;
+
+    var visualRect = visual.getBoundingClientRect();
+    var frameRect = frame.getBoundingClientRect();
+    var centerX = frameRect.left + frameRect.width / 2 - visualRect.left;
+    var centerY = frameRect.top + frameRect.height / 2 - visualRect.top;
+    var frameSize = frame.offsetWidth;
+    var radius = frameSize * 0.496;
+    var radians = state.angle * Math.PI / 180;
+    var radialX = Math.cos(radians);
+    var radialY = Math.sin(radians);
+    var width = getDiscPeekWidth(catKey, frameSize);
+    var height = width * image.naturalHeight / image.naturalWidth;
+    var anchorX = centerX + radialX * radius;
+    var anchorY = centerY + radialY * radius;
+    var coverInset = height * state.coverInsetRatio;
+    var visibleAnchorX = anchorX - radialX * coverInset;
+    var visibleAnchorY = anchorY - radialY * coverInset;
+    var travel = Math.min(height * 0.72, window.innerWidth <= 640 ? 54 : 76);
+
+    peek.style.left = (visibleAnchorX - width * state.contactX) + "px";
+    peek.style.top = (visibleAnchorY - height) + "px";
+    peek.style.width = width + "px";
+    peek.style.height = height + "px";
+    peek.style.setProperty("--peek-contact-x", (state.contactX * 100) + "%");
+    peek.style.setProperty("--peek-rotation", (state.angle + 90) + "deg");
+    peek.style.setProperty("--peek-in-x", (-radialX * travel) + "px");
+    peek.style.setProperty("--peek-in-y", (-radialY * travel) + "px");
+    peek.dataset.angle = String(state.angle);
+    peek.dataset.coverInset = coverInset.toFixed(2);
+    return true;
+  }
+
+  function chooseNextDiscPeekCat() {
+    if (!discPeekLastCat) return "dazuo";
+    return discPeekLastCat === "dazuo" ? "laba" : "dazuo";
+  }
+
+  function scheduleDiscPeek(delay) {
+    window.clearTimeout(discPeekShowTimer);
+    if (document.body.dataset.view !== "home" || prefersReducedMotion()) return;
+    discPeekShowTimer = window.setTimeout(function () {
+      showRandomDiscPeek(chooseNextDiscPeekCat());
+    }, delay);
+  }
+
+  function showRandomDiscPeek(catKey) {
+    var peek = getDiscPeek(catKey);
+    var state = discPeekStates[catKey];
+    if (!peek || discPeekActiveCat || document.body.dataset.view !== "home" || prefersReducedMotion()) return;
+    if (document.hidden) {
+      scheduleDiscPeek(600);
+      return;
+    }
+
+    state.angle = chooseDiscPeekAngle(catKey);
+    if (!layoutDiscPeek(catKey)) {
+      scheduleDiscPeek(300);
+      return;
+    }
+    discPeekActiveCat = catKey;
+    discPeekLastCat = catKey;
+    peek.classList.remove("is-hiding", "is-visible");
+    peek.setAttribute("aria-hidden", "false");
+    peek.tabIndex = 0;
+    void peek.offsetWidth;
+    peek.classList.add("is-visible");
+
+    window.clearTimeout(discPeekHideTimer);
+    discPeekHideTimer = window.setTimeout(function () {
+      hideDiscPeek(catKey, false);
+    }, randomDiscPeekDelay(5200, 7200));
+  }
+
+  function hideDiscPeek(catKey, wasTapped) {
+    var peek = getDiscPeek(catKey);
+    var state = discPeekStates[catKey];
+    if (!peek || !peek.classList.contains("is-visible")) return;
+
+    window.clearTimeout(discPeekHideTimer);
+    peek.classList.remove("is-visible");
+    peek.classList.add("is-hiding");
+    peek.setAttribute("aria-hidden", "true");
+    peek.tabIndex = -1;
+    state.lastAngle = state.angle;
+    discPeekHideTimer = window.setTimeout(function () {
+      peek.classList.remove("is-hiding");
+      state.angle = null;
+      discPeekActiveCat = null;
+      scheduleDiscPeek(wasTapped ? randomDiscPeekDelay(700, 1200) : randomDiscPeekDelay(1500, 2600));
+    }, 190);
+  }
+
+  function suspendDiscPeek() {
+    window.clearTimeout(discPeekShowTimer);
+    window.clearTimeout(discPeekHideTimer);
+    Object.keys(discPeekStates).forEach(function (catKey) {
+      var state = discPeekStates[catKey];
+      var peek = getDiscPeek(catKey);
+      state.angle = null;
+      if (!peek) return;
+      peek.classList.remove("is-visible", "is-hiding");
+      peek.setAttribute("aria-hidden", "true");
+      peek.tabIndex = -1;
+    });
+    discPeekActiveCat = null;
+  }
+
+  function resumeDiscPeeks(delay) {
+    if (discPeekActiveCat) return;
+    scheduleDiscPeek(delay);
+  }
+
+  function pointerIsOutsideCover(event) {
+    var frame = document.querySelector(".hero-cover-frame");
+    if (!frame) return false;
+    var frameRect = frame.getBoundingClientRect();
+    var centerX = frameRect.left + frameRect.width / 2;
+    var centerY = frameRect.top + frameRect.height / 2;
+    var distance = Math.hypot(event.clientX - centerX, event.clientY - centerY);
+    return distance >= frame.offsetWidth * 0.496 - 1;
+  }
+
+  function initDiscPeek() {
+    var desktopHover = window.matchMedia("(hover: hover) and (pointer: fine)");
+    document.querySelectorAll("[data-peek-cat]").forEach(function (peek) {
+      var catKey = peek.dataset.peekCat;
+      var hideOnDesktopHover = function (event) {
+        if (event.pointerType !== "mouse" || !desktopHover.matches || !peek.classList.contains("is-visible")) return;
+        if (!pointerIsOutsideCover(event)) return;
+        hideDiscPeek(catKey, true);
+      };
+      peek.addEventListener("pointerenter", hideOnDesktopHover);
+      peek.addEventListener("pointermove", hideOnDesktopHover);
+      peek.addEventListener("click", function (event) {
+        if (!peek.classList.contains("is-visible")) return;
+        event.preventDefault();
+        hideDiscPeek(catKey, true);
+      });
+      peek.querySelector("img").addEventListener("load", function () {
+        if (discPeekStates[catKey].angle !== null) layoutDiscPeek(catKey);
+      });
+    });
+    window.addEventListener("resize", function () {
+      window.cancelAnimationFrame(discPeekResizeFrame);
+      discPeekResizeFrame = window.requestAnimationFrame(function () {
+        if (discPeekActiveCat) layoutDiscPeek(discPeekActiveCat);
+      });
+    });
+    if ("ResizeObserver" in window) {
+      new ResizeObserver(function () {
+        if (discPeekActiveCat) layoutDiscPeek(discPeekActiveCat);
+      }).observe(document.querySelector(".hero-cover-frame"));
+    }
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) suspendDiscPeek();
+      else if (document.body.dataset.view === "home") resumeDiscPeeks(500);
+    });
+    resumeDiscPeeks(700);
   }
 
   function startTest(reset) {
@@ -155,8 +389,14 @@
     var specialChoice = getAnswerValue(config.flow.special.question);
     return {
       cat: window.CATBTI_MATCHER.matchCat(config, traits, specialChoice),
-      traits: traits
+      traits: traits,
+      secretSurprise: Math.random() < secretSurpriseChance
     };
+  }
+
+  function shouldShowSecretSurprise(result) {
+    var params = new URLSearchParams(window.location.search);
+    return Boolean(result.secretSurprise || params.get("surprise") === "1");
   }
 
   function getCatImages(cat) {
@@ -314,12 +554,14 @@
     var resultType = document.getElementById("resultType");
     var surprise = document.getElementById("dazuoSurprise");
     var portrait = document.querySelector(".result-portrait-wrap");
+    var showSecretSurprise = shouldShowSecretSurprise(result);
 
     currentResultCat = cat;
     window.clearTimeout(catIntroTimer);
     resultType.textContent = cat.type;
     resultType.dataset.length = cat.type.length;
     document.getElementById("resultTitle").textContent = cat.title;
+    configureDankeQueenTrigger(cat);
     document.getElementById("resultBarcodeCode").textContent = "CATBTI · " + cat.type;
     renderPhotoCarousel(cat);
     prepareCatIntroEffect(document.querySelector(".result-photo-stage"), cat);
@@ -328,13 +570,21 @@
     document.getElementById("resultPersonality").textContent = cat.personality;
     renderStory(cat);
     document.getElementById("resultQuote").textContent = cat.quote;
+    resetDankeQueenPop();
     window.clearTimeout(surpriseTimer);
     window.clearTimeout(surpriseDelayTimer);
-    portrait.classList.remove("is-dazuo-result", "is-gift-preview", "is-awaiting-surprise", "is-playing-surprise", "is-surprise-complete");
-    surprise.classList.remove("is-active");
+    window.clearTimeout(giftHintTimer);
+    portrait.classList.remove("is-secret-surprise", "is-playing-surprise", "is-surprise-complete");
+    document.body.classList.remove("is-secret-surprise-open");
+    surprise.classList.remove("is-active", "is-ready");
     surprise.setAttribute("aria-hidden", "true");
     showView("result");
     startReceiptPrint();
+    if (showSecretSurprise) {
+      surpriseDelayTimer = window.setTimeout(function () {
+        prepareDazuoSurprise(surprise, portrait);
+      }, 720);
+    }
   }
 
   function playTone(startTime, frequency, duration, type, gainLevel) {
@@ -469,39 +719,296 @@
     });
   }
 
+  function playCatMeowAudio() {
+    var meow = new Audio("audio/cat-meow.mp3");
+    meow.volume = 0.62;
+    document.body.dataset.catMeowAudio = "starting";
+    return meow.play().then(function () {
+      document.body.dataset.catMeowAudio = "playing";
+      return true;
+    }).catch(function () {
+      document.body.dataset.catMeowAudio = "blocked";
+      return false;
+    });
+  }
+
+  function playSurpriseCatAudio(catKey) {
+    var source = catKey === "dazuo" ? "audio/dazuo-interact.mp3" : "audio/laba-interact.mp3";
+    if (currentSurpriseAudio) {
+      currentSurpriseAudio.pause();
+      currentSurpriseAudio.currentTime = 0;
+    }
+    currentSurpriseAudio = new Audio(source);
+    currentSurpriseAudio.volume = catKey === "dazuo" ? 0.72 : 0.68;
+    document.body.dataset.surpriseCatAudio = catKey + "-starting";
+    return currentSurpriseAudio.play().then(function () {
+      document.body.dataset.surpriseCatAudio = catKey + "-playing";
+      return true;
+    }).catch(function () {
+      document.body.dataset.surpriseCatAudio = catKey + "-blocked";
+      return false;
+    });
+  }
+
+  function playGiftHintSound() {
+    var AudioContext = window.AudioContext || window.webkitAudioContext;
+    playCatMeowAudio();
+    if (!AudioContext) return Promise.resolve(false);
+    audioContext = audioContext || new AudioContext();
+    var resume = audioContext.state === "suspended" ? audioContext.resume() : Promise.resolve();
+    return resume.then(function () {
+      if (audioContext.state !== "running") return false;
+      var now = audioContext.currentTime + 0.04;
+      playGiftRattle(now);
+      playMeow(now + 0.34, 455, 0.28);
+      document.body.dataset.dazuoAudio = "hint-playing";
+      return true;
+    }).catch(function () {
+      document.body.dataset.dazuoAudio = "blocked";
+      return false;
+    });
+  }
+
+  function playButtonClickSound() {
+    var AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return Promise.resolve(false);
+    audioContext = audioContext || new AudioContext();
+    var resume = audioContext.state === "suspended" ? audioContext.resume() : Promise.resolve();
+    return resume.then(function () {
+      if (audioContext.state !== "running") return false;
+      var now = audioContext.currentTime + 0.02;
+      playTone(now, 220, 0.06, "triangle", 0.045);
+      playTone(now + 0.045, 132, 0.08, "sine", 0.035);
+      return true;
+    }).catch(function () { return false; });
+  }
+
+  function updateSurpriseCaption(surprise, text) {
+    var caption = surprise && surprise.querySelector("#surpriseCaption");
+    var copy = caption && caption.querySelector(".surprise-caption-copy");
+    if (copy) {
+      copy.textContent = text;
+    } else if (caption) {
+      caption.textContent = text;
+    }
+  }
+
+  function resetDazuoSurprise(surprise) {
+    if (!surprise) return;
+    surprise.classList.remove("is-active", "is-ready", "is-cats-settled", "is-dazuo-push", "is-laba-push", "is-dazuo-speak", "is-laba-speak", "is-ending");
+    surprise.dataset.dazuoClicked = "";
+    surprise.dataset.labaClicked = "";
+    updateSurpriseCaption(surprise, "礼盒里好像有猫在讲话……");
+    var endButton = surprise.querySelector("#surpriseEndButton");
+    if (endButton) endButton.classList.remove("is-pressing");
+  }
+
   function completeDazuoSurprise(surprise, portrait) {
-    portrait.classList.remove("is-awaiting-surprise", "is-playing-surprise");
+    window.clearTimeout(surpriseTimer);
+    window.clearTimeout(giftHintTimer);
+    window.clearTimeout(surpriseInteractionTimer);
+    window.clearTimeout(surpriseSettleTimer);
+    if (currentSurpriseAudio) {
+      currentSurpriseAudio.pause();
+      currentSurpriseAudio.currentTime = 0;
+    }
+    portrait.classList.remove("is-playing-surprise");
     portrait.classList.add("is-surprise-complete");
-    surprise.classList.remove("is-active");
+    document.body.classList.remove("is-secret-surprise-open");
+    resetDazuoSurprise(surprise);
     surprise.setAttribute("aria-hidden", "true");
   }
 
   function startDazuoSurprise(surprise, portrait) {
     if (!surprise || !portrait || portrait.classList.contains("is-playing-surprise")) return;
     window.clearTimeout(surpriseTimer);
-    portrait.classList.remove("is-awaiting-surprise", "is-surprise-complete");
+    window.clearTimeout(giftHintTimer);
+    window.clearTimeout(surpriseInteractionTimer);
+    portrait.classList.remove("is-surprise-complete");
     portrait.classList.add("is-playing-surprise");
-    surprise.classList.remove("is-active");
+    document.body.classList.add("is-secret-surprise-open");
+    resetDazuoSurprise(surprise);
     void surprise.offsetWidth;
     surprise.classList.add("is-active");
-    surprise.setAttribute("aria-hidden", "true");
+    surprise.setAttribute("aria-hidden", "false");
+    updateSurpriseCaption(surprise, "礼盒里好像有猫在讲话……");
     playDazuoSound();
-    surpriseTimer = window.setTimeout(function () {
-      completeDazuoSurprise(surprise, portrait);
-    }, 4450);
+    playCatMeowAudio();
+    surpriseSettleTimer = window.setTimeout(function () {
+      surprise.classList.add("is-cats-settled");
+    }, 2250);
   }
 
   function prepareDazuoSurprise(surprise, portrait) {
     if (!surprise || !portrait) return;
-    portrait.classList.remove("is-gift-preview");
-    portrait.classList.add("is-dazuo-result");
+    if (surprise.parentElement !== document.body) {
+      document.body.appendChild(surprise);
+    }
+    portrait.classList.add("is-secret-surprise");
+    document.body.classList.add("is-secret-surprise-open");
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       completeDazuoSurprise(surprise, portrait);
       return;
     }
 
-    portrait.classList.add("is-awaiting-surprise");
     surprise.setAttribute("aria-hidden", "false");
+    resetDazuoSurprise(surprise);
+    void surprise.offsetWidth;
+    surprise.classList.add("is-ready");
+    playGiftHintSound();
+    giftHintTimer = window.setTimeout(function () {
+      if (surprise.classList.contains("is-ready")) playGiftHintSound();
+    }, 1650);
+  }
+
+  function interactWithSurpriseCat(surprise, catKey) {
+    if (!surprise || !surprise.classList.contains("is-active")) return;
+    window.clearTimeout(surpriseInteractionTimer);
+    surprise.classList.remove("is-dazuo-push", "is-laba-push", "is-dazuo-speak", "is-laba-speak");
+    void surprise.offsetWidth;
+    if (catKey === "dazuo") {
+      surprise.dataset.dazuoClicked = "1";
+      surprise.classList.add("is-dazuo-push", "is-dazuo-speak");
+      updateSurpriseCaption(surprise, "大佐：偶是一枚风度翩翩的绅士吖");
+      playSurpriseCatAudio("dazuo");
+    } else {
+      surprise.dataset.labaClicked = "1";
+      surprise.classList.add("is-laba-push", "is-laba-speak");
+      updateSurpriseCaption(surprise, "喇叭：橘猫体型优势，启动。");
+      playSurpriseCatAudio("laba");
+    }
+    surpriseInteractionTimer = window.setTimeout(function () {
+      surprise.classList.remove("is-dazuo-push", "is-laba-push");
+    }, 560);
+  }
+
+  function playMeowNow(basePitch, duration) {
+    var AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    audioContext = audioContext || new AudioContext();
+    var resume = audioContext.state === "suspended" ? audioContext.resume() : Promise.resolve();
+    resume.then(function () {
+      if (audioContext.state !== "running") return;
+      playMeow(audioContext.currentTime + 0.03, basePitch, duration);
+    }).catch(function () {});
+  }
+
+  function endDazuoSurprise(surprise, portrait) {
+    var endButton = surprise && surprise.querySelector("#surpriseEndButton");
+    if (endButton) endButton.classList.add("is-pressing");
+    playButtonClickSound();
+    window.clearTimeout(surpriseTimer);
+    surpriseTimer = window.setTimeout(function () {
+      if (surprise) surprise.classList.add("is-ending");
+    }, 90);
+    surpriseTimer = window.setTimeout(function () {
+      if (endButton) endButton.classList.remove("is-pressing");
+      completeDazuoSurprise(surprise, portrait);
+    }, 360);
+  }
+
+  function resetDankeQueenPop() {
+    var pop = document.getElementById("dankeQueenPop");
+    window.clearTimeout(dankeQueenTimer);
+    window.clearTimeout(dankeQueenEntryTimer);
+    window.clearTimeout(dankeQueenInteractTimer);
+    window.clearTimeout(dankeQueenParticleTimer);
+    if (pop) pop.classList.remove("is-queen-speaking", "is-queen-entering", "is-queen-interacting", "is-queen-bursting");
+    document.body.classList.remove("is-danke-queen-open");
+    if (currentDankeQueenAudio) {
+      currentDankeQueenAudio.pause();
+      currentDankeQueenAudio.currentTime = 0;
+    }
+  }
+
+  function configureDankeQueenTrigger(cat) {
+    var trigger = document.getElementById("resultTitle");
+    if (!trigger) return;
+    var enabled = cat && cat.type === "KISS";
+    trigger.classList.toggle("is-danke-trigger", enabled);
+    trigger.classList.remove("is-trigger-pressing");
+    if (enabled) {
+      trigger.setAttribute("role", "button");
+      trigger.tabIndex = 0;
+      trigger.setAttribute("aria-label", "\u70b9\u51fb\u4eb2\u4eb2\u89e6\u53d1\u86cb\u58f3\u5f69\u86cb");
+    } else {
+      trigger.removeAttribute("role");
+      trigger.removeAttribute("tabindex");
+      trigger.removeAttribute("aria-label");
+    }
+  }
+
+  function triggerDankeQueenPop() {
+    var pop = document.getElementById("dankeQueenPop");
+    if (!pop) return;
+    window.clearTimeout(dankeQueenTimer);
+    window.clearTimeout(dankeQueenEntryTimer);
+    window.clearTimeout(dankeQueenParticleTimer);
+    pop.classList.remove("is-queen-speaking", "is-queen-entering", "is-queen-interacting", "is-queen-bursting");
+    void pop.offsetWidth;
+    pop.classList.add("is-queen-speaking", "is-queen-entering", "is-queen-bursting");
+    document.body.classList.add("is-danke-queen-open");
+    playMeowNow(560, 0.24);
+    dankeQueenEntryTimer = window.setTimeout(function () {
+      pop.classList.remove("is-queen-entering");
+    }, 2300);
+    dankeQueenParticleTimer = window.setTimeout(function () {
+      pop.classList.remove("is-queen-bursting");
+    }, 900);
+    dankeQueenTimer = window.setTimeout(function () {
+      pop.classList.remove("is-queen-speaking", "is-queen-entering", "is-queen-interacting", "is-queen-bursting");
+      document.body.classList.remove("is-danke-queen-open");
+    }, 5000);
+  }
+
+  function playDankeQueenAudio() {
+    if (currentDankeQueenAudio) {
+      currentDankeQueenAudio.pause();
+      currentDankeQueenAudio.currentTime = 0;
+    }
+    currentDankeQueenAudio = new Audio("audio/danke-interact.mp3");
+    currentDankeQueenAudio.volume = 0.78;
+    document.body.dataset.dankeQueenAudio = "starting";
+    return currentDankeQueenAudio.play().then(function () {
+      document.body.dataset.dankeQueenAudio = "playing";
+    }).catch(function () {
+      document.body.dataset.dankeQueenAudio = "blocked";
+    });
+  }
+
+  function interactDankeQueenCat(event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    var pop = document.getElementById("dankeQueenPop");
+    if (!pop || !pop.classList.contains("is-queen-speaking")) return;
+    window.clearTimeout(dankeQueenInteractTimer);
+    window.clearTimeout(dankeQueenParticleTimer);
+    pop.classList.remove("is-queen-interacting", "is-queen-bursting");
+    void pop.offsetWidth;
+    pop.classList.add("is-queen-interacting", "is-queen-bursting");
+    playDankeQueenAudio();
+    window.clearTimeout(dankeQueenTimer);
+    dankeQueenTimer = window.setTimeout(function () {
+      pop.classList.remove("is-queen-speaking", "is-queen-entering", "is-queen-interacting", "is-queen-bursting");
+      document.body.classList.remove("is-danke-queen-open");
+    }, 4200);
+    dankeQueenParticleTimer = window.setTimeout(function () {
+      pop.classList.remove("is-queen-bursting");
+    }, 900);
+    dankeQueenInteractTimer = window.setTimeout(function () {
+      pop.classList.remove("is-queen-interacting");
+    }, 920);
+  }
+
+  function pressDankeQueenTrigger(trigger) {
+    if (!trigger || !trigger.classList.contains("is-danke-trigger")) return;
+    trigger.classList.add("is-trigger-pressing");
+    window.setTimeout(function () {
+      trigger.classList.remove("is-trigger-pressing");
+    }, 170);
+    triggerDankeQueenPop();
   }
 
   function renderGallery() {
@@ -576,7 +1083,15 @@
   document.body.dataset.view = "home";
 
   var previewType = new URLSearchParams(window.location.search).get("result");
-  var previewCat = config.cats.find(function (cat) { return cat.type === previewType; });
+  var previewAliases = {
+    QUEEN: "KISS",
+    FREE: "DEVIL",
+    LYFE: "CHIL",
+    RUNER: "RUNNER",
+    GENT: "BOSS"
+  };
+  var normalizedPreviewType = previewAliases[previewType] || previewType;
+  var previewCat = config.cats.find(function (cat) { return cat.type === normalizedPreviewType; });
   if (previewCat) renderResult(previewCat);
   else if (window.location.hash === "#cats") showView("gallery");
 
@@ -596,6 +1111,16 @@
     showView(galleryReturnView);
   });
   document.getElementById("retryButton").addEventListener("click", function () { startTest(true); });
+  document.getElementById("resultTitle").addEventListener("click", function (event) {
+    pressDankeQueenTrigger(event.currentTarget);
+  });
+  document.getElementById("resultTitle").addEventListener("keydown", function (event) {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    if (!event.currentTarget.classList.contains("is-danke-trigger")) return;
+    event.preventDefault();
+    pressDankeQueenTrigger(event.currentTarget);
+  });
+  document.querySelector(".danke-queen-cat").addEventListener("click", interactDankeQueenCat);
   document.getElementById("photoPrev").addEventListener("click", function () { showPhoto(currentPhotoIndex - 1); });
   document.getElementById("photoNext").addEventListener("click", function () { showPhoto(currentPhotoIndex + 1); });
   document.getElementById("photoPagination").addEventListener("click", function (event) {
@@ -606,8 +1131,38 @@
     var track = event.currentTarget;
     if (track.clientWidth) updatePhotoPagination(Math.round(track.scrollLeft / track.clientWidth));
   }, { passive: true });
-  document.getElementById("dazuoSurpriseStart").addEventListener("click", function () {
-    startDazuoSurprise(document.getElementById("dazuoSurprise"), document.querySelector(".result-portrait-wrap"));
+  document.getElementById("dazuoSurprise").addEventListener("click", function (event) {
+    var portrait = document.querySelector(".result-portrait-wrap");
+    if (event.target.closest(".gift-box")) {
+      startDazuoSurprise(event.currentTarget, portrait);
+      return;
+    }
+    var catButton = event.target.closest("[data-duel-cat]");
+    if (catButton) {
+      interactWithSurpriseCat(event.currentTarget, catButton.dataset.duelCat);
+      return;
+    }
+    if (event.target.closest("#surpriseEndButton")) {
+      endDazuoSurprise(event.currentTarget, portrait);
+    }
+  });
+  document.getElementById("dazuoSurprise").addEventListener("keydown", function (event) {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    if (event.target.closest(".gift-box")) {
+      event.preventDefault();
+      startDazuoSurprise(event.currentTarget, document.querySelector(".result-portrait-wrap"));
+      return;
+    }
+    var catButton = event.target.closest("[data-duel-cat]");
+    if (catButton) {
+      event.preventDefault();
+      interactWithSurpriseCat(event.currentTarget, catButton.dataset.duelCat);
+      return;
+    }
+    if (event.target.closest("#surpriseEndButton")) {
+      event.preventDefault();
+      endDazuoSurprise(event.currentTarget, document.querySelector(".result-portrait-wrap"));
+    }
   });
   document.getElementById("testBackButton").addEventListener("click", previousQuestion);
   document.getElementById("optionList").addEventListener("click", function (event) {
@@ -628,4 +1183,5 @@
   window.addEventListener("hashchange", function () {
     if (window.location.hash === "#cats") showView("gallery");
   });
+  initDiscPeek();
 })();

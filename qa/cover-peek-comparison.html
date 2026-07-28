@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>封面双猫探头动画 · 设计对照</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 28px; color: #3f2d27; background: #eadfd7; font-family: "Microsoft YaHei", sans-serif; }
+    h1 { margin: 0 0 22px; font-size: 26px; }
+    h2 { margin: 28px 0 12px; font-size: 18px; }
+    .comparison { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }
+    .comparison.mobile { grid-template-columns: repeat(2, 390px); }
+    figure { margin: 0; overflow: hidden; border: 1px solid rgba(69, 44, 34, .18); border-radius: 14px; background: #fffaf3; box-shadow: 0 10px 28px rgba(75, 47, 35, .12); }
+    figcaption { padding: 10px 14px; border-bottom: 1px solid rgba(69, 44, 34, .12); font-size: 14px; font-weight: 700; }
+    img { display: block; width: 100%; height: auto; }
+    .note { margin: 16px 0 0; color: #725c51; font-size: 14px; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <h1>封面双猫“鬼鬼祟祟探头”动画对照</h1>
+  <h2>桌面端 · 1440 × 900</h2>
+  <div class="comparison">
+    <figure>
+      <figcaption>原始封面状态（双猫隐藏）</figcaption>
+      <img src="cover-peek-desktop-source.jpg" alt="桌面端原始封面">
+    </figure>
+    <figure>
+      <figcaption>实现状态（大佐从左侧探头）</figcaption>
+      <img src="cover-peek-desktop-active.jpg" alt="桌面端大佐探头">
+    </figure>
+  </div>
+  <h2>手机端 · 390 × 844</h2>
+  <div class="comparison mobile">
+    <figure>
+      <figcaption>原始封面状态（双猫隐藏）</figcaption>
+      <img src="cover-peek-mobile-source.jpg" alt="手机端原始封面">
+    </figure>
+    <figure>
+      <figcaption>实现状态（喇叭从右侧探头）</figcaption>
+      <img src="cover-peek-mobile-active.jpg" alt="手机端喇叭探头">
+    </figure>
+  </div>
+  <p class="note">对照重点：品牌标志、标题、开始按钮和主插画保持原位；新增猫咪只从屏幕边缘短暂露出，并位于主内容下层。</p>
+</body>
+</html>
