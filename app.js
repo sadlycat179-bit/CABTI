@@ -17,8 +17,10 @@
   var receiptTimer = null;
   var currentPhotoIndex = 0;
   var currentPhotoCount = 0;
+  var resultPhotoImages = [];
   var currentResultCat = null;
   var galleryReturnView = null;
+  var galleryImageObserver = null;
   var catIntroTimer = null;
   var dialogEffectTimer = null;
   var dankeQueenTimer = null;
@@ -58,6 +60,10 @@
     document.body.dataset.view = name;
     if (name === "home") resumeDiscPeeks(650);
     else suspendDiscPeek();
+    if (name === "gallery") {
+      hydrateDeferredImages(document.querySelector(".student-guide"), 1);
+      primeGalleryImages(6);
+    }
     window.scrollTo(0, 0);
     document.getElementById("app").focus({ preventScroll: true });
   }
@@ -223,6 +229,9 @@
 
   function resumeDiscPeeks(delay) {
     if (discPeekActiveCat) return;
+    runWhenIdle(function () {
+      hydrateDeferredImages(document.querySelector(".hero-visual"));
+    }, 1200);
     scheduleDiscPeek(delay);
   }
 
@@ -405,6 +414,81 @@
     return cat.images && cat.images.length ? cat.images : (cat.image ? [cat.image] : []);
   }
 
+  function setDeferredImageSource(image) {
+    if (!image || !image.dataset || !image.dataset.src || image.src) return false;
+    image.src = image.dataset.src;
+    image.removeAttribute("data-src");
+    return true;
+  }
+
+  function hydrateDeferredImages(root, limit) {
+    if (!root) return;
+    Array.from(root.querySelectorAll("img[data-src]")).slice(0, limit || undefined).forEach(setDeferredImageSource);
+  }
+
+  function runWhenIdle(callback, timeout) {
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(callback, { timeout: timeout || 1200 });
+      return;
+    }
+    window.setTimeout(callback, Math.min(timeout || 360, 700));
+  }
+
+  function preloadImage(source) {
+    if (!source) return;
+    var image = new Image();
+    image.decoding = "async";
+    image.src = source;
+  }
+
+  function preloadResultPhoto(index) {
+    if (!resultPhotoImages.length) return;
+    var normalizedIndex = (index + resultPhotoImages.length) % resultPhotoImages.length;
+    var image = document.querySelector('#resultPhotoTrack img[data-photo-index="' + normalizedIndex + '"]');
+    if (image) setDeferredImageSource(image);
+  }
+
+  function preloadNearbyResultPhotos(index) {
+    if (!resultPhotoImages.length) return;
+    preloadResultPhoto(index);
+    runWhenIdle(function () {
+      preloadResultPhoto(index + 1);
+      if (resultPhotoImages.length > 2) preloadImage(resultPhotoImages[(index + 2) % resultPhotoImages.length]);
+    }, 520);
+  }
+
+  function initGalleryLazyImages() {
+    var images = Array.from(document.querySelectorAll("#catGrid img[data-src]"));
+    if (!images.length) return;
+    if (!("IntersectionObserver" in window)) {
+      hydrateDeferredImages(document.getElementById("catGrid"));
+      return;
+    }
+    if (!galleryImageObserver) {
+      galleryImageObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          setDeferredImageSource(entry.target);
+          galleryImageObserver.unobserve(entry.target);
+        });
+      }, { rootMargin: "260px 0px" });
+    }
+    images.forEach(function (image) { galleryImageObserver.observe(image); });
+  }
+
+  function primeGalleryImages(count) {
+    hydrateDeferredImages(document.getElementById("catGrid"), count || 6);
+    initGalleryLazyImages();
+  }
+
+  function warmDazuoSurpriseImages() {
+    hydrateDeferredImages(document.getElementById("dazuoSurprise"));
+  }
+
+  function warmDankeQueenImages() {
+    hydrateDeferredImages(document.getElementById("dankeQueenPop"));
+  }
+
   function updatePhotoPagination(index) {
     currentPhotoIndex = Math.max(0, Math.min(index, currentPhotoCount - 1));
     document.querySelectorAll("#photoPagination button").forEach(function (button, buttonIndex) {
@@ -418,6 +502,7 @@
     var track = document.getElementById("resultPhotoTrack");
     if (!currentPhotoCount || !track.clientWidth) return;
     var nextIndex = (index + currentPhotoCount) % currentPhotoCount;
+    preloadNearbyResultPhotos(nextIndex);
     track.scrollTo({ left: track.clientWidth * nextIndex, behavior: behavior || "smooth" });
     updatePhotoPagination(nextIndex);
   }
@@ -440,6 +525,30 @@
     portrait.classList.toggle("has-pending-photo", images.length === 0);
     track.scrollLeft = 0;
     updatePhotoPagination(0);
+  }
+
+  function renderPhotoCarousel(cat) {
+    var images = getCatImages(cat);
+    var track = document.getElementById("resultPhotoTrack");
+    var pagination = document.getElementById("photoPagination");
+    var portrait = document.querySelector(".result-portrait-wrap");
+    resultPhotoImages = images.slice();
+    currentPhotoCount = images.length;
+    currentPhotoIndex = 0;
+    track.innerHTML = images.length ? images.map(function (image, index) {
+      var sourceAttribute = index === 0 ? 'src="' + image + '"' : 'data-src="' + image + '"';
+      var priority = index === 0 ? ' fetchpriority="high"' : ' loading="lazy"';
+      return '<img ' + sourceAttribute + ' data-photo-index="' + index + '" alt="' + cat.name + '的照片 ' + (index + 1) + '" decoding="async"' + priority + ' style="object-fit:contain">';
+    }).join("") : '<div class="photo-placeholder" role="img" aria-label="' + cat.name + '的照片待补充"><span>ฅ</span><strong>' + cat.name + '</strong><small>照片待补充</small></div>';
+    pagination.innerHTML = images.map(function (_, index) {
+      return '<button type="button" data-photo-index="' + index + '" aria-label="查看第 ' + (index + 1) + ' 张照片" aria-current="' + (index === 0) + '"></button>';
+    }).join("");
+    portrait.classList.toggle("has-single-photo", images.length <= 1);
+    portrait.classList.toggle("has-multiple-photos", images.length > 1);
+    portrait.classList.toggle("has-pending-photo", images.length === 0);
+    track.scrollLeft = 0;
+    updatePhotoPagination(0);
+    if (images.length > 1) preloadNearbyResultPhotos(0);
   }
 
   function completeReceiptPrint(scene, resultView) {
@@ -550,6 +659,8 @@
       if (block.image) {
         var image = document.createElement("img");
         image.src = block.image;
+        image.loading = "lazy";
+        image.decoding = "async";
         image.alt = cat.name + "的猫咪小传配图";
         image.width = block.width;
         image.height = block.height;
@@ -593,7 +704,11 @@
     surprise.setAttribute("aria-hidden", "true");
     showView("result");
     startReceiptPrint();
+    if (cat.type === "KISS") {
+      runWhenIdle(warmDankeQueenImages, 1600);
+    }
     if (showSecretSurprise) {
+      runWhenIdle(warmDazuoSurpriseImages, 360);
       surpriseDelayTimer = window.setTimeout(function () {
         prepareDazuoSurprise(surprise, portrait);
       }, 720);
@@ -868,6 +983,7 @@
     if (surprise.parentElement !== document.body) {
       document.body.appendChild(surprise);
     }
+    warmDazuoSurpriseImages();
     portrait.classList.add("is-secret-surprise");
     document.body.classList.add("is-secret-surprise-open");
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -966,6 +1082,7 @@
   function triggerDankeQueenPop() {
     var pop = document.getElementById("dankeQueenPop");
     if (!pop) return;
+    warmDankeQueenImages();
     window.clearTimeout(dankeQueenTimer);
     window.clearTimeout(dankeQueenEntryTimer);
     window.clearTimeout(dankeQueenParticleTimer);
@@ -1048,7 +1165,7 @@
       var index = config.cats.indexOf(cat);
       var image = getCatImages(cat)[0];
       var imageMarkup = image
-        ? '<img src="' + image + '" alt="' + cat.name + '" loading="lazy" style="object-fit:contain">'
+        ? '<img data-src="' + image + '" alt="' + cat.name + '" loading="lazy" decoding="async" style="object-fit:contain">'
         : '<span class="card-photo-placeholder"><i>ฅ</i><b>照片待补充</b></span>';
       return '<button class="cat-card" type="button" data-cat-index="' + index + '" aria-label="查看' + cat.name + '的资料">' +
         '<span class="card-image">' + imageMarkup + '<i>' + cat.type + "</i></span>" +
@@ -1064,6 +1181,7 @@
         '<div class="region-heading"><span class="region-marker" aria-hidden="true"></span><div><h3 id="region-' + group.key + '">' + group.title + '</h3><p>' + group.note + '</p></div><strong>' + cats.length + ' 只</strong></div>' +
         '<div class="cat-grid">' + cats.map(renderCatCard).join("") + '</div></section>';
     }).join("");
+    initGalleryLazyImages();
   }
 
   function openCatDialog(index) {
@@ -1074,7 +1192,7 @@
       : '<span class="dialog-photo-placeholder"><i>ฅ</i><b>' + cat.name + '照片待补充</b></span>';
     var effectName = ["peek", "bounce", "tilt", "float"][index % 4];
     var specialMarkup = cat.introEffect === "big-face"
-      ? '<div class="cat-intro-effect" aria-hidden="true"><img src="images/updated-cats/zuoxiajiao-surprise-cutout.png" alt=""></div>'
+      ? '<div class="cat-intro-effect" aria-hidden="true"><img data-src="images/updated-cats/zuoxiajiao-surprise-cutout.png" alt="" decoding="async"></div>'
       : "";
     var biographyMarkup = getStoryBlocks(cat).map(function (block) {
       if (block.image) {
@@ -1156,7 +1274,11 @@
   });
   document.getElementById("resultPhotoTrack").addEventListener("scroll", function (event) {
     var track = event.currentTarget;
-    if (track.clientWidth) updatePhotoPagination(Math.round(track.scrollLeft / track.clientWidth));
+    if (track.clientWidth) {
+      var nextIndex = Math.round(track.scrollLeft / track.clientWidth);
+      updatePhotoPagination(nextIndex);
+      preloadNearbyResultPhotos(nextIndex);
+    }
   }, { passive: true });
   document.getElementById("dazuoSurprise").addEventListener("click", function (event) {
     var portrait = document.querySelector(".result-portrait-wrap");
