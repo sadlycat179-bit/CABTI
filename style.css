@@ -1943,3 +1943,8 @@ body[data-view="result"] { color: #57463d; background: #f7d9a1; font-family: "Mi
   box-shadow: 0 8px 0 rgba(87, 70, 61, .18);
 }
 #homeGalleryButton:active { box-shadow: 0 3px 0 rgba(87, 70, 61, .2); }
+
+.home-view .hero-actions {
+  position: relative;
+  transform: translateY(-12px);
+}
