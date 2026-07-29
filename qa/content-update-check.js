@@ -3,6 +3,7 @@ const { chromium } = require(process.argv[2]);
 (async () => {
   const browser = await chromium.launch({ executablePath: process.argv[3], headless: true });
   const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  const baseUrl = process.env.CATBTI_BASE_URL || "http://127.0.0.1:8765/";
   const errors = [];
 
   page.on("pageerror", (error) => errors.push(error.message));
@@ -17,7 +18,7 @@ const { chromium } = require(process.argv[2]);
   };
 
   for (const [type, content] of Object.entries(expected)) {
-    await page.goto(`http://127.0.0.1:8765/?result=${type}`, { waitUntil: "networkidle" });
+    await page.goto(`${baseUrl}?result=${type}`, { waitUntil: "networkidle" });
     await page.waitForSelector("#resultView.is-active");
     const actual = await page.evaluate(() => ({
       quote: document.querySelector("#resultQuote").textContent.trim(),
@@ -39,7 +40,44 @@ const { chromium } = require(process.argv[2]);
     if (type === "DRINK") await page.screenshot({ path: "qa/content-drink-mobile.png", fullPage: true });
   }
 
-  await page.goto("http://127.0.0.1:8765/#cats", { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}?result=SONG`, { waitUntil: "networkidle" });
+  await page.waitForSelector("#resultView.is-active");
+  const daiyuResult = await page.evaluate(() => {
+    const blocks = Array.from(document.querySelector("#resultBiography").children);
+    const lastBlock = blocks.at(-1);
+    const previousBlock = blocks.at(-2);
+    return {
+      image: lastBlock && lastBlock.tagName === "IMG" ? lastBlock.getAttribute("src") : null,
+      previousText: previousBlock ? previousBlock.textContent.trim() : "",
+    };
+  });
+  if (daiyuResult.image !== "images/docx-update/daiyu-fight.jpg") throw new Error(`Daiyu result image mismatch: ${daiyuResult.image}`);
+  if (!daiyuResult.previousText.endsWith("然后挨打。")) throw new Error("Daiyu image is not placed after the requested sentence");
+  await page.screenshot({ path: "qa/content-daiyu-mobile.png", fullPage: true });
+
+  await page.goto(`${baseUrl}?result=IDEA`, { waitUntil: "networkidle" });
+  await page.waitForSelector("#resultView.is-active");
+  const danhuangResult = await page.evaluate(() => {
+    const blocks = Array.from(document.querySelector("#resultBiography").children);
+    return blocks.filter((block) => block.tagName === "IMG").map((image) => ({
+      image: image.getAttribute("src"),
+      previousText: image.previousElementSibling ? image.previousElementSibling.textContent.trim() : "",
+    }));
+  });
+  const expectedDanhuangImages = [
+    { image: "images/docx-update/danhuang-schedule.jpg", ending: "曾经一度被人以为是公猫。" },
+    { image: "images/docx-update/danhuang-banner.jpg", ending: "它会不会变成笑笑二世？" },
+  ];
+  if (danhuangResult.length !== expectedDanhuangImages.length) throw new Error(`Danhuang image count mismatch: ${danhuangResult.length}`);
+  expectedDanhuangImages.forEach((expectedImage, index) => {
+    const actualImage = danhuangResult[index];
+    if (actualImage.image !== expectedImage.image || !actualImage.previousText.endsWith(expectedImage.ending)) {
+      throw new Error(`Danhuang image ${index + 1} placement mismatch: ${JSON.stringify(actualImage)}`);
+    }
+  });
+  await page.screenshot({ path: "qa/content-danhuang-mobile.png", fullPage: true });
+
+  await page.goto(`${baseUrl}#cats`, { waitUntil: "networkidle" });
   const guide = (await page.locator(".guide-bubble").textContent()).trim();
   const expectedGuide = "住在不同区解锁的咪也不一样呀！来提前认识一下咪们吧，欢迎来摊位上购入咪学长学姐周边！";
   if (guide !== expectedGuide) throw new Error(`guide copy mismatch: ${guide}`);
@@ -47,6 +85,14 @@ const { chromium } = require(process.argv[2]);
   if (galleryText.includes("中区")) throw new Error("central area still appears in gallery");
   const northText = await page.locator(".cat-region-north").innerText();
   if (!northText.includes("养乐多") || !northText.includes("桔子灯")) throw new Error("north gallery group is missing updated cats");
+  await page.getByRole("button", { name: "查看黛玉的资料" }).click();
+  const dialogImage = await page.locator('.dialog-story-image[src="images/docx-update/daiyu-fight.jpg"]').count();
+  if (dialogImage !== 1) throw new Error("Daiyu gallery dialog is missing the new story image");
+  await page.locator("#dialogClose").click();
+  await page.getByRole("button", { name: "查看蛋黄的资料" }).click();
+  const danhuangDialogImages = await page.locator('.dialog-story-image[src^="images/docx-update/danhuang-"]').count();
+  if (danhuangDialogImages !== 2) throw new Error("Danhuang gallery dialog is missing story images");
+  await page.locator("#dialogClose").click();
 
   const configAudit = await page.evaluate(() => ({
     catCount: window.CATBTI_CONFIG.cats.length,
