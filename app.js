@@ -515,7 +515,8 @@
     currentPhotoCount = images.length;
     currentPhotoIndex = 0;
     track.innerHTML = images.length ? images.map(function (image, index) {
-      return '<img src="' + image + '" alt="' + cat.name + '的照片 ' + (index + 1) + '" style="object-fit:contain">';
+      var loadingAttributes = index === 0 ? ' fetchpriority="high"' : ' loading="lazy"';
+      return '<img src="' + image + '" alt="' + cat.name + '的照片 ' + (index + 1) + '" decoding="async"' + loadingAttributes + ' style="object-fit:contain">';
     }).join("") : '<div class="photo-placeholder" role="img" aria-label="' + cat.name + '的照片待补充"><span>ฅ</span><strong>' + cat.name + '</strong><small>照片待补充</small></div>';
     pagination.innerHTML = images.map(function (_, index) {
       return '<button type="button" data-photo-index="' + index + '" aria-label="查看第 ' + (index + 1) + ' 张照片" aria-current="' + (index === 0) + '"></button>';
@@ -1184,11 +1185,45 @@
     initGalleryLazyImages();
   }
 
+  function updateDialogPhotoPagination(host, index) {
+    var track = host && host.querySelector(".dialog-photo-track");
+    var slides = track ? track.querySelectorAll(".dialog-cover") : [];
+    if (!slides.length) return;
+    var currentIndex = Math.max(0, Math.min(index, slides.length - 1));
+    host.querySelectorAll("[data-dialog-photo-index]").forEach(function (button, buttonIndex) {
+      var active = buttonIndex === currentIndex;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-current", active ? "true" : "false");
+    });
+    host.dataset.photoIndex = currentIndex;
+  }
+
+  function showDialogPhoto(host, index, behavior) {
+    var track = host && host.querySelector(".dialog-photo-track");
+    var slides = track ? track.querySelectorAll(".dialog-cover") : [];
+    if (!track || !slides.length || !track.clientWidth) return;
+    var nextIndex = (index + slides.length) % slides.length;
+    track.scrollTo({ left: track.clientWidth * nextIndex, behavior: behavior || "smooth" });
+    updateDialogPhotoPagination(host, nextIndex);
+  }
+
   function openCatDialog(index) {
     var cat = config.cats[index];
-    var image = getCatImages(cat)[0];
-    var imageMarkup = image
-      ? '<img class="dialog-cover" src="' + image + '" alt="' + cat.name + '" style="object-fit:contain">'
+    var images = getCatImages(cat);
+    var imageMarkup = images.length
+      ? '<div class="dialog-photo-carousel' + (images.length > 1 ? ' has-multiple-photos' : '') + '">' +
+          '<div class="dialog-photo-track">' + images.map(function (image, imageIndex) {
+            var loadingAttributes = imageIndex === 0 ? ' fetchpriority="high"' : ' loading="lazy"';
+            return '<img class="dialog-cover" src="' + image + '" alt="' + cat.name + '的照片 ' + (imageIndex + 1) + '" decoding="async"' + loadingAttributes + '>';
+          }).join("") + '</div>' +
+          (images.length > 1
+            ? '<button class="dialog-photo-nav dialog-photo-prev" type="button" data-dialog-photo-direction="-1" aria-label="上一张照片" title="上一张"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>' +
+              '<button class="dialog-photo-nav dialog-photo-next" type="button" data-dialog-photo-direction="1" aria-label="下一张照片" title="下一张"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>' +
+              '<div class="dialog-photo-pagination" aria-label="照片页码">' + images.map(function (_, imageIndex) {
+                return '<button type="button" data-dialog-photo-index="' + imageIndex + '" aria-label="查看第 ' + (imageIndex + 1) + ' 张照片" aria-current="' + (imageIndex === 0) + '" class="' + (imageIndex === 0 ? 'is-active' : '') + '"></button>';
+              }).join("") + '</div>'
+            : '') +
+        '</div>'
       : '<span class="dialog-photo-placeholder"><i>ฅ</i><b>' + cat.name + '照片待补充</b></span>';
     var effectName = ["peek", "bounce", "tilt", "float"][index % 4];
     var specialMarkup = cat.introEffect === "big-face"
@@ -1213,6 +1248,14 @@
     var host = document.querySelector(".dialog-image");
     prepareCatIntroEffect(host, cat);
     dialog.showModal();
+    var dialogTrack = host.querySelector(".dialog-photo-track");
+    if (dialogTrack) {
+      dialogTrack.addEventListener("scroll", function () {
+        if (dialogTrack.clientWidth) {
+          updateDialogPhotoPagination(host, Math.round(dialogTrack.scrollLeft / dialogTrack.clientWidth));
+        }
+      }, { passive: true });
+    }
     window.requestAnimationFrame(function () {
       host.classList.add("is-playing-dialog-effect");
       playCatIntroEffect(host, cat, "dialog");
@@ -1241,6 +1284,12 @@
   else if (window.location.hash === "#cats") showView("gallery");
 
   document.getElementById("startButton").addEventListener("click", function () { startTest(true); });
+  document.getElementById("homeGalleryButton").addEventListener("click", function () {
+    galleryReturnView = "home";
+    document.getElementById("galleryBackLabel").textContent = "返回首页";
+    document.getElementById("galleryBackButton").hidden = false;
+    showView("gallery");
+  });
   document.getElementById("galleryShortcut").addEventListener("click", function () {
     galleryReturnView = null;
     document.getElementById("galleryBackButton").hidden = true;
@@ -1248,6 +1297,7 @@
   });
   document.getElementById("resultGalleryButton").addEventListener("click", function () {
     galleryReturnView = "result";
+    document.getElementById("galleryBackLabel").textContent = "返回测试结果";
     document.getElementById("galleryBackButton").hidden = false;
     showView("gallery");
   });
@@ -1325,6 +1375,17 @@
   document.getElementById("catGrid").addEventListener("click", function (event) {
     var card = event.target.closest("[data-cat-index]");
     if (card) openCatDialog(Number(card.dataset.catIndex));
+  });
+  document.getElementById("dialogContent").addEventListener("click", function (event) {
+    var host = event.target.closest(".dialog-image");
+    if (!host) return;
+    var directionButton = event.target.closest("[data-dialog-photo-direction]");
+    if (directionButton) {
+      showDialogPhoto(host, Number(host.dataset.photoIndex || 0) + Number(directionButton.dataset.dialogPhotoDirection));
+      return;
+    }
+    var paginationButton = event.target.closest("[data-dialog-photo-index]");
+    if (paginationButton) showDialogPhoto(host, Number(paginationButton.dataset.dialogPhotoIndex));
   });
   document.getElementById("dialogClose").addEventListener("click", closeDialog);
   document.getElementById("catDialog").addEventListener("click", function (event) {
