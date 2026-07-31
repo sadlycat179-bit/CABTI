@@ -7,10 +7,10 @@
   <meta name="description" content="CATBTI HBUT 校园猫格测试">
   <title>CATBTI · HBUT 校园猫格测试</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='24' font-size='24'%3E%F0%9F%90%BE%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="styles/base.css?v=20260731-refactor5">
-  <link rel="stylesheet" href="styles/result.css?v=20260731-refactor5">
-  <link rel="stylesheet" href="styles/effects.css?v=20260731-refactor5">
-  <link rel="stylesheet" href="styles/refinements.css?v=20260731-refactor5">
+  <link rel="stylesheet" href="styles/foundation/base.css?v=20260731-refactor5">
+  <link rel="stylesheet" href="styles/pages/result.css?v=20260731-refactor5">
+  <link rel="stylesheet" href="styles/effects/animations.css?v=20260731-refactor5">
+  <link rel="stylesheet" href="styles/foundation/responsive.css?v=20260731-refactor5">
 </head>
 <body>
   <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -46,13 +46,13 @@
       </div>
       <div class="hero-visual">
         <button class="disc-peek-cat disc-peek-dazuo" type="button" data-peek-cat="dazuo" aria-label="发现圆边偷看的大佐，点一下让它躲回去" aria-hidden="true" tabindex="-1">
-          <img data-src="images/cover-peek-dazuo-radial-v2.png?v=20260728-radial2" data-sizes="(max-width: 640px) 112px, 148px" alt="" decoding="async">
+          <img data-src="assets/images/cover/cover-peek-dazuo-radial-v2.png?v=20260728-radial2" data-sizes="(max-width: 640px) 112px, 148px" alt="" decoding="async">
         </button>
         <button class="disc-peek-cat disc-peek-laba" type="button" data-peek-cat="laba" aria-label="发现圆边偷看的喇叭，点一下让它躲回去" aria-hidden="true" tabindex="-1">
-          <img data-src="images/cover-peek-laba-radial-v2.png?v=20260728-radial2" data-sizes="(max-width: 640px) 112px, 148px" alt="" decoding="async">
+          <img data-src="assets/images/cover/cover-peek-laba-radial-v2.png?v=20260728-radial2" data-sizes="(max-width: 640px) 112px, 148px" alt="" decoding="async">
         </button>
         <div class="hero-cover-frame">
-          <img data-src="images/updated-cats/cover.png" data-sizes="(max-width: 760px) 92vw, 620px" fetchpriority="high" alt="四只 HBUT 校园猫咪的可爱合照插画">
+          <img data-src="assets/images/cover/cover.png" data-sizes="(max-width: 760px) 92vw, 620px" fetchpriority="high" alt="四只 HBUT 校园猫咪的可爱合照插画">
           <span class="cover-sticker" aria-hidden="true">HBUT<br>CAT CLUB</span>
         </div>
         <span class="cover-spark cover-spark-one" aria-hidden="true">✦</span>
@@ -106,7 +106,7 @@
             <div class="result-photo-stage">
               <div class="result-photo-track" id="resultPhotoTrack" aria-live="polite"></div>
               <div class="cat-intro-effect" id="resultCatEffect" aria-hidden="true">
-                <img data-src="images/updated-cats/zuoxiajiao-surprise-cutout.png" data-sizes="(max-width: 900px) 88vw, 600px" alt="" decoding="async">
+                <img data-src="assets/images/surprises/zuoxiajiao-surprise-cutout.png" data-sizes="(max-width: 900px) 88vw, 600px" alt="" decoding="async">
               </div>
               <button class="photo-nav photo-prev" id="photoPrev" type="button" aria-label="上一张猫咪照片" title="上一张">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
@@ -122,21 +122,21 @@
               <div class="gift-whisper" aria-hidden="true">似乎有什么东西在里面</div>
               <div class="cat-duel-stage" aria-live="polite">
                 <button class="duel-cat duel-cat-dazuo" type="button" data-duel-cat="dazuo" aria-label="点击大佐">
-                  <img data-src="images/surprise-dazuo.png" data-sizes="(max-width: 640px) 46vw, 420px" alt="大佐" decoding="async">
+                  <img data-src="assets/images/surprises/duo/surprise-dazuo.png" data-sizes="(max-width: 640px) 46vw, 420px" alt="大佐" decoding="async">
                 </button>
                 <button class="duel-cat duel-cat-laba" type="button" data-duel-cat="laba" aria-label="点击喇叭">
-                  <img data-src="images/surprise-laba.png" data-sizes="(max-width: 640px) 46vw, 420px" alt="喇叭" decoding="async">
+                  <img data-src="assets/images/surprises/duo/surprise-laba.png" data-sizes="(max-width: 640px) 46vw, 420px" alt="喇叭" decoding="async">
                 </button>
                 <div class="surprise-caption" id="surpriseCaption">
                   <span class="surprise-caption-copy">礼盒里好像有猫在讲话……</span>
                 </div>
                 <button class="surprise-end-button" id="surpriseEndButton" type="button" aria-label="结束惊喜">
-                  <img class="end-paw" data-src="images/end-paw.png" data-sizes="96px" alt="" aria-hidden="true" decoding="async">
+                  <img class="end-paw" data-src="assets/images/ui/end-paw.png" data-sizes="96px" alt="" aria-hidden="true" decoding="async">
                   <span>END</span>
                 </button>
               </div>
               <div class="gift-box" role="button" tabindex="0" aria-label="打开礼盒">
-                <img data-src="images/dazuo-gift-box.png" data-sizes="(max-width: 640px) 72vw, 420px" alt="" decoding="async">
+                <img data-src="assets/images/surprises/duo/dazuo-gift-box.png" data-sizes="(max-width: 640px) 72vw, 420px" alt="" decoding="async">
               </div>
               <span class="spark spark-1">✦</span>
               <span class="spark spark-2">✧</span>
@@ -194,12 +194,12 @@
         </div>
         <button class="danke-queen-pop" id="dankeQueenPop" type="button" aria-label="queen surprise">
           <span class="danke-heart" aria-hidden="true"></span>
-          <img class="danke-throne" data-src="images/danke-queen-throne.png?v=20260729-queen1" data-sizes="(max-width: 640px) 90vw, 620px" alt="" aria-hidden="true" decoding="async">
+          <img class="danke-throne" data-src="assets/images/surprises/danke-queen/danke-queen-throne.png?v=20260729-queen1" data-sizes="(max-width: 640px) 90vw, 620px" alt="" aria-hidden="true" decoding="async">
           <span class="danke-particles" aria-hidden="true">
             <i></i><i></i><i></i><i></i><i></i><i></i>
             <i></i><i></i><i></i><i></i><i></i><i></i>
           </span>
-          <img class="danke-queen-cat" data-src="images/danke-queen-royal.png?v=20260729-queen1" data-sizes="(max-width: 640px) 48vw, 360px" alt="Danke queen" decoding="async">
+          <img class="danke-queen-cat" data-src="assets/images/surprises/danke-queen/danke-queen-royal.png?v=20260729-queen1" data-sizes="(max-width: 640px) 48vw, 360px" alt="Danke queen" decoding="async">
           <span class="danke-queen-bubble">QUEEN never cry&#65281;&#128081;</span>
         </button>
       </div>
@@ -248,15 +248,15 @@
             </div>
             <div class="account-grid">
               <figure class="account-card">
-                <div class="account-image"><img src="images/optimized/updated-cats/social-douyin-jpg-1200.webp" srcset="images/optimized/updated-cats/social-douyin-jpg-320.webp 320w, images/optimized/updated-cats/social-douyin-jpg-720.webp 720w, images/optimized/updated-cats/social-douyin-jpg-1200.webp 1200w" sizes="(max-width: 640px) 88vw, 360px" width="1200" height="1867" alt="猫协抖音账号页面" loading="lazy" decoding="async"></div>
+                <div class="account-image"><img src="assets/images/generated/social/social-douyin-jpg-1200.webp" srcset="assets/images/generated/social/social-douyin-jpg-320.webp 320w, assets/images/generated/social/social-douyin-jpg-720.webp 720w, assets/images/generated/social/social-douyin-jpg-1200.webp 1200w" sizes="(max-width: 640px) 88vw, 360px" width="1200" height="1867" alt="猫协抖音账号页面" loading="lazy" decoding="async"></div>
                 <figcaption><strong>抖音账号</strong><span>40719682273</span></figcaption>
               </figure>
               <figure class="account-card">
-                <div class="account-image"><img src="images/optimized/updated-cats/social-xiaohongshu-jpg-987.webp" srcset="images/optimized/updated-cats/social-xiaohongshu-jpg-320.webp 320w, images/optimized/updated-cats/social-xiaohongshu-jpg-720.webp 720w, images/optimized/updated-cats/social-xiaohongshu-jpg-987.webp 987w" sizes="(max-width: 640px) 88vw, 360px" width="987" height="1347" alt="猫协小红书账号页面" loading="lazy" decoding="async"></div>
+                <div class="account-image"><img src="assets/images/generated/social/social-xiaohongshu-jpg-987.webp" srcset="assets/images/generated/social/social-xiaohongshu-jpg-320.webp 320w, assets/images/generated/social/social-xiaohongshu-jpg-720.webp 720w, assets/images/generated/social/social-xiaohongshu-jpg-987.webp 987w" sizes="(max-width: 640px) 88vw, 360px" width="987" height="1347" alt="猫协小红书账号页面" loading="lazy" decoding="async"></div>
                 <figcaption><strong>小红书账号</strong><span>2983452568</span></figcaption>
               </figure>
               <figure class="account-card">
-                <div class="account-image account-image-qr"><img src="images/optimized/updated-cats/public-account-qr-jpg-258.webp" width="258" height="258" alt="喵栖梧猫德 class 微信公众号二维码" loading="lazy" decoding="async"></div>
+                <div class="account-image account-image-qr"><img src="assets/images/generated/social/public-account-qr-jpg-258.webp" width="258" height="258" alt="喵栖梧猫德 class 微信公众号二维码" loading="lazy" decoding="async"></div>
                 <figcaption><strong>公众号账号</strong><span>扫码关注</span><small class="account-note">有精心制作的湖工猫咪图鉴，速来品鉴！</small></figcaption>
               </figure>
             </div>
@@ -282,7 +282,7 @@
       <aside class="student-guide" aria-label="新生指引">
         <div class="guide-bubble">住在不同区解锁的咪也不一样呀！来提前认识一下咪们吧，欢迎来摊位上购入咪学长学姐周边！</div>
         <figure class="guide-cat">
-          <img data-src="images/updated-cats/danhuang-guide-cutout.png" data-sizes="(max-width: 640px) 42vw, 280px" alt="蛋黄新生指引" decoding="async">
+          <img data-src="assets/images/guides/danhuang-guide-cutout.png" data-sizes="(max-width: 640px) 42vw, 280px" alt="蛋黄新生指引" decoding="async">
           <figcaption>新生指引</figcaption>
         </figure>
       </aside>
@@ -316,8 +316,8 @@
       </div>
 
       <div class="fate-escape-cats" aria-hidden="true">
-        <img class="fate-escape-cat fate-escape-dazuo" data-src="images/surprise-dazuo.png" data-sizes="(max-width: 640px) 38vw, 360px" alt="" decoding="async">
-        <img class="fate-escape-cat fate-escape-laba" data-src="images/surprise-laba.png" data-sizes="(max-width: 640px) 38vw, 360px" alt="" decoding="async">
+        <img class="fate-escape-cat fate-escape-dazuo" data-src="assets/images/surprises/duo/surprise-dazuo.png" data-sizes="(max-width: 640px) 38vw, 360px" alt="" decoding="async">
+        <img class="fate-escape-cat fate-escape-laba" data-src="assets/images/surprises/duo/surprise-laba.png" data-sizes="(max-width: 640px) 38vw, 360px" alt="" decoding="async">
         <span class="fate-paw-trail fate-paw-trail-left">🐾　🐾　🐾</span>
         <span class="fate-paw-trail fate-paw-trail-right">🐾　🐾　🐾</span>
       </div>
@@ -335,13 +335,15 @@
     <div id="dialogContent"></div>
   </dialog>
 
-  <script src="config.js?v=20260729-danta1"></script>
-  <script src="matcher.js"></script>
-  <script src="scripts/image-manifest.js?v=20260731-images1"></script>
-  <script src="scripts/runtime.js?v=20260731-images1"></script>
-  <script src="scripts/effects/fate-transition.js?v=20260731-images1"></script>
-  <script src="scripts/effects/danke-queen.js?v=20260731-refactor3"></script>
-  <script src="scripts/effects/duo-surprise.js?v=20260731-images1"></script>
-  <script src="app.js?v=20260801-images2"></script>
+  <script src="src/data/config.js?v=20260729-danta1"></script>
+  <script src="src/core/matcher.js"></script>
+  <script src="src/core/image-manifest.js?v=20260731-images1"></script>
+  <script src="src/core/runtime.js?v=20260731-images1"></script>
+  <script src="src/features/cover-peek.js?v=20260801-structure1"></script>
+  <script src="src/features/quiz.js?v=20260801-structure1"></script>
+  <script src="src/features/effects/fate-transition.js?v=20260731-images1"></script>
+  <script src="src/features/effects/danke-queen.js?v=20260731-refactor3"></script>
+  <script src="src/features/effects/duo-surprise.js?v=20260731-images1"></script>
+  <script src="src/app.js?v=20260801-images2"></script>
 </body>
 </html>
