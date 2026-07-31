@@ -33,9 +33,7 @@
   var dankeQueenInteractTimer = null;
   var dankeQueenParticleTimer = null;
   var currentDankeQueenAudio = null;
-  var fateTransitionTimeline = runtime.createTimerGroup();
-  var fateTransitionAudio = null;
-  var fateTransitionInProgress = false;
+  var fateTransitionController = null;
   var discPeekResizeFrame = null;
   var discPeekShowTimer = null;
   var discPeekHideTimer = null;
@@ -294,7 +292,7 @@
   function startTest(reset) {
     window.clearTimeout(receiptTimer);
     window.clearTimeout(surpriseDelayTimer);
-    resetFateTransition();
+    fateTransitionController.reset();
     if (reset) answers = {};
     currentQuestion = 0;
     showView("test");
@@ -360,7 +358,7 @@
     document.getElementById("questionTitle").textContent = question.text;
     document.getElementById("testBackButton").disabled = currentQuestion === 0;
     if (currentQuestion >= Math.max(0, total - 2)) {
-      runWhenIdle(warmFateTransitionAssets, 480);
+      runWhenIdle(fateTransitionController.warm, 480);
     }
 
     document.getElementById("optionList").innerHTML = question.options.map(function (option, index) {
@@ -390,7 +388,7 @@
 
     var visibleQuestions = getVisibleQuestions();
     if (currentQuestion >= visibleQuestions.length - 1) {
-      startFateTransition(calculateResult());
+      fateTransitionController.start(calculateResult());
       return;
     }
 
@@ -413,131 +411,12 @@
   function calculateResult() {
     var traits = calculateTraits();
     var specialChoice = getAnswerValue(config.flow.special.question);
-    var forcedFate = getForcedFateOutcome();
+    var forcedFate = fateTransitionController.getForcedOutcome();
     return {
       cat: window.CATBTI_MATCHER.matchCat(config, traits, specialChoice),
       traits: traits,
       secretSurprise: forcedFate === null ? Math.random() < secretSurpriseChance : forcedFate
     };
-  }
-
-  function getForcedFateOutcome() {
-    var params = new URLSearchParams(window.location.search);
-    var fate = (params.get("fate") || "").toLowerCase();
-    if (fate === "hit" || fate === "success") return true;
-    if (fate === "miss" || fate === "fail") return false;
-    if (params.get("surprise") === "1") return true;
-    if (params.get("surprise") === "0") return false;
-    return null;
-  }
-
-  function shouldShowSecretSurprise(result) {
-    var forcedFate = getForcedFateOutcome();
-    return forcedFate === null ? Boolean(result.secretSurprise) : forcedFate;
-  }
-
-  function getFateTransitionAudio() {
-    if (!fateTransitionAudio) {
-      fateTransitionAudio = new Audio("audio/fate-dice-transition.wav?v=20260731-fate2");
-      fateTransitionAudio.preload = "auto";
-      fateTransitionAudio.volume = 0.72;
-    }
-    return fateTransitionAudio;
-  }
-
-  function warmFateTransitionAssets() {
-    hydrateDeferredImages(document.getElementById("fateTransition"));
-    var soundtrack = getFateTransitionAudio();
-    if (soundtrack.readyState === 0) soundtrack.load();
-  }
-
-  function playFateTransitionAudio() {
-    var soundtrack = getFateTransitionAudio();
-    soundtrack.pause();
-    soundtrack.currentTime = 0;
-    soundtrack.volume = 0.72;
-    var playPromise = soundtrack.play();
-    if (playPromise && typeof playPromise.catch === "function") {
-      playPromise.catch(function () {
-        document.body.dataset.fateAudio = "blocked";
-      });
-    }
-  }
-
-  function stopFateTransitionAudio() {
-    if (!fateTransitionAudio) return;
-    fateTransitionAudio.pause();
-    fateTransitionAudio.currentTime = 0;
-  }
-
-  function resetFateTransition() {
-    fateTransitionTimeline.clear();
-    stopFateTransitionAudio();
-    fateTransitionInProgress = false;
-    document.body.classList.remove("is-fate-transition-open");
-    var transition = document.getElementById("fateTransition");
-    if (!transition) return;
-    transition.classList.remove("is-active", "is-rolling", "is-revealed", "is-hit", "is-miss");
-    transition.setAttribute("aria-hidden", "true");
-    var outcome = document.getElementById("fateOutcome");
-    if (outcome) outcome.textContent = "";
-  }
-
-  function finishFateTransition(result) {
-    var transition = document.getElementById("fateTransition");
-    renderResult(result);
-    document.body.classList.remove("is-fate-transition-open");
-    if (transition) {
-      transition.classList.remove("is-active");
-      transition.setAttribute("aria-hidden", "true");
-    }
-    fateTransitionTimeline.schedule(function () {
-      if (transition) transition.classList.remove("is-rolling", "is-revealed", "is-hit", "is-miss");
-      fateTransitionInProgress = false;
-      stopFateTransitionAudio();
-    }, 380);
-  }
-
-  function startFateTransition(result) {
-    if (!result || fateTransitionInProgress) return;
-    var transition = document.getElementById("fateTransition");
-    var outcome = document.getElementById("fateOutcome");
-    if (!transition || !outcome) {
-      renderResult(result);
-      return;
-    }
-
-    fateTransitionTimeline.clear();
-    warmFateTransitionAssets();
-    if (result.secretSurprise) warmDazuoSurpriseImages();
-    fateTransitionInProgress = true;
-    document.body.classList.add("is-fate-transition-open");
-    transition.classList.remove("is-rolling", "is-revealed", "is-hit", "is-miss");
-    transition.setAttribute("aria-hidden", "false");
-    outcome.textContent = "";
-    void transition.offsetWidth;
-    transition.classList.add("is-active", "is-rolling");
-
-    var reducedMotion = prefersReducedMotion();
-    if (!reducedMotion) playFateTransitionAudio();
-
-    var revealDelay = reducedMotion ? 280 : 4250;
-    var finishDelay = reducedMotion ? 980 : (result.secretSurprise ? 5450 : 6500);
-
-    fateTransitionTimeline.schedule(function () {
-      transition.classList.add("is-revealed");
-      if (result.secretSurprise) {
-        transition.classList.add("is-hit");
-        outcome.textContent = "它们来了！";
-      } else {
-        transition.classList.add("is-miss");
-        outcome.textContent = "啊哦~大佐喇叭逃跑了🐱";
-      }
-    }, revealDelay);
-
-    fateTransitionTimeline.schedule(function () {
-      finishFateTransition(result);
-    }, finishDelay);
   }
 
   function getCatImages(cat) {
@@ -762,7 +641,7 @@
     var resultType = document.getElementById("resultType");
     var surprise = document.getElementById("dazuoSurprise");
     var portrait = document.querySelector(".result-portrait-wrap");
-    var showSecretSurprise = shouldShowSecretSurprise(result);
+    var showSecretSurprise = fateTransitionController.shouldShowSecretSurprise(result);
 
     currentResultCat = cat;
     window.clearTimeout(catIntroTimer);
@@ -1349,6 +1228,14 @@
     document.getElementById("catDialog").close();
   }
 
+  fateTransitionController = window.CATBTI_EFFECTS.createFateTransitionController({
+    runtime: runtime,
+    audioSource: "audio/fate-dice-transition.wav?v=20260731-fate2",
+    prefersReducedMotion: prefersReducedMotion,
+    warmSurpriseImages: warmDazuoSurpriseImages,
+    renderResult: renderResult
+  });
+
   fillConfiguredContent();
   renderGallery();
   document.body.dataset.view = "home";
@@ -1366,9 +1253,9 @@
   if (previewCat) {
     var previewParams = new URLSearchParams(window.location.search);
     if (previewParams.get("transition") === "1") {
-      var previewFate = getForcedFateOutcome();
+      var previewFate = fateTransitionController.getForcedOutcome();
       window.setTimeout(function () {
-        startFateTransition({
+        fateTransitionController.start({
           cat: previewCat,
           traits: {},
           secretSurprise: previewFate === null ? Math.random() < secretSurpriseChance : previewFate
