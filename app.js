@@ -649,27 +649,6 @@
     var track = document.getElementById("resultPhotoTrack");
     var pagination = document.getElementById("photoPagination");
     var portrait = document.querySelector(".result-portrait-wrap");
-    currentPhotoCount = images.length;
-    currentPhotoIndex = 0;
-    track.innerHTML = images.length ? images.map(function (image, index) {
-      var loadingAttributes = index === 0 ? ' fetchpriority="high"' : ' loading="lazy"';
-      return '<img src="' + image + '" alt="' + cat.name + '的照片 ' + (index + 1) + '" decoding="async"' + loadingAttributes + ' style="object-fit:contain">';
-    }).join("") : '<div class="photo-placeholder" role="img" aria-label="' + cat.name + '的照片待补充"><span>ฅ</span><strong>' + cat.name + '</strong><small>照片待补充</small></div>';
-    pagination.innerHTML = images.map(function (_, index) {
-      return '<button type="button" data-photo-index="' + index + '" aria-label="查看第 ' + (index + 1) + ' 张照片" aria-current="' + (index === 0) + '"></button>';
-    }).join("");
-    portrait.classList.toggle("has-single-photo", images.length <= 1);
-    portrait.classList.toggle("has-multiple-photos", images.length > 1);
-    portrait.classList.toggle("has-pending-photo", images.length === 0);
-    track.scrollLeft = 0;
-    updatePhotoPagination(0);
-  }
-
-  function renderPhotoCarousel(cat) {
-    var images = getCatImages(cat);
-    var track = document.getElementById("resultPhotoTrack");
-    var pagination = document.getElementById("photoPagination");
-    var portrait = document.querySelector(".result-portrait-wrap");
     resultPhotoImages = images.slice();
     currentPhotoCount = images.length;
     currentPhotoIndex = 0;
