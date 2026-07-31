@@ -28,11 +28,7 @@
   var galleryImageObserver = null;
   var catIntroTimer = null;
   var dialogEffectTimer = null;
-  var dankeQueenTimer = null;
-  var dankeQueenEntryTimer = null;
-  var dankeQueenInteractTimer = null;
-  var dankeQueenParticleTimer = null;
-  var currentDankeQueenAudio = null;
+  var dankeQueenController = null;
   var fateTransitionController = null;
   var discPeekResizeFrame = null;
   var discPeekShowTimer = null;
@@ -648,7 +644,7 @@
     resultType.textContent = cat.type;
     resultType.dataset.length = cat.type.length;
     document.getElementById("resultTitle").textContent = cat.title;
-    configureDankeQueenTrigger(cat);
+    dankeQueenController.configureTrigger(cat);
     document.getElementById("resultBarcodeCode").textContent = "CATBTI · " + cat.type;
     renderPhotoCarousel(cat);
     prepareCatIntroEffect(document.querySelector(".result-photo-stage"), cat);
@@ -657,7 +653,7 @@
     renderPersonality(cat);
     renderStory(cat);
     document.getElementById("resultQuote").textContent = cat.quote;
-    resetDankeQueenPop();
+    dankeQueenController.reset();
     window.clearTimeout(surpriseTimer);
     window.clearTimeout(surpriseDelayTimer);
     window.clearTimeout(giftHintTimer);
@@ -1011,111 +1007,6 @@
     }, 360);
   }
 
-  function resetDankeQueenPop() {
-    var pop = document.getElementById("dankeQueenPop");
-    window.clearTimeout(dankeQueenTimer);
-    window.clearTimeout(dankeQueenEntryTimer);
-    window.clearTimeout(dankeQueenInteractTimer);
-    window.clearTimeout(dankeQueenParticleTimer);
-    if (pop) pop.classList.remove("is-queen-speaking", "is-queen-entering", "is-queen-interacting", "is-queen-bursting");
-    document.body.classList.remove("is-danke-queen-open");
-    if (currentDankeQueenAudio) {
-      currentDankeQueenAudio.pause();
-      currentDankeQueenAudio.currentTime = 0;
-    }
-  }
-
-  function configureDankeQueenTrigger(cat) {
-    var trigger = document.getElementById("resultTitle");
-    if (!trigger) return;
-    var enabled = cat && cat.type === "KISS";
-    trigger.classList.toggle("is-danke-trigger", enabled);
-    trigger.classList.remove("is-trigger-pressing");
-    if (enabled) {
-      trigger.setAttribute("role", "button");
-      trigger.tabIndex = 0;
-      trigger.setAttribute("aria-label", "\u70b9\u51fb\u4eb2\u4eb2\u89e6\u53d1\u86cb\u58f3\u5f69\u86cb");
-    } else {
-      trigger.removeAttribute("role");
-      trigger.removeAttribute("tabindex");
-      trigger.removeAttribute("aria-label");
-    }
-  }
-
-  function triggerDankeQueenPop() {
-    var pop = document.getElementById("dankeQueenPop");
-    if (!pop) return;
-    warmDankeQueenImages();
-    window.clearTimeout(dankeQueenTimer);
-    window.clearTimeout(dankeQueenEntryTimer);
-    window.clearTimeout(dankeQueenParticleTimer);
-    pop.classList.remove("is-queen-speaking", "is-queen-entering", "is-queen-interacting", "is-queen-bursting");
-    void pop.offsetWidth;
-    pop.classList.add("is-queen-speaking", "is-queen-entering", "is-queen-bursting");
-    document.body.classList.add("is-danke-queen-open");
-    playMeowNow(560, 0.24);
-    dankeQueenEntryTimer = window.setTimeout(function () {
-      pop.classList.remove("is-queen-entering");
-    }, 2300);
-    dankeQueenParticleTimer = window.setTimeout(function () {
-      pop.classList.remove("is-queen-bursting");
-    }, 900);
-    dankeQueenTimer = window.setTimeout(function () {
-      pop.classList.remove("is-queen-speaking", "is-queen-entering", "is-queen-interacting", "is-queen-bursting");
-      document.body.classList.remove("is-danke-queen-open");
-    }, 5000);
-  }
-
-  function playDankeQueenAudio() {
-    if (currentDankeQueenAudio) {
-      currentDankeQueenAudio.pause();
-      currentDankeQueenAudio.currentTime = 0;
-    }
-    currentDankeQueenAudio = new Audio("audio/danke-interact.mp3");
-    currentDankeQueenAudio.volume = 0.78;
-    document.body.dataset.dankeQueenAudio = "starting";
-    return currentDankeQueenAudio.play().then(function () {
-      document.body.dataset.dankeQueenAudio = "playing";
-    }).catch(function () {
-      document.body.dataset.dankeQueenAudio = "blocked";
-    });
-  }
-
-  function interactDankeQueenCat(event) {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    var pop = document.getElementById("dankeQueenPop");
-    if (!pop || !pop.classList.contains("is-queen-speaking")) return;
-    window.clearTimeout(dankeQueenInteractTimer);
-    window.clearTimeout(dankeQueenParticleTimer);
-    pop.classList.remove("is-queen-interacting", "is-queen-bursting");
-    void pop.offsetWidth;
-    pop.classList.add("is-queen-interacting", "is-queen-bursting");
-    playDankeQueenAudio();
-    window.clearTimeout(dankeQueenTimer);
-    dankeQueenTimer = window.setTimeout(function () {
-      pop.classList.remove("is-queen-speaking", "is-queen-entering", "is-queen-interacting", "is-queen-bursting");
-      document.body.classList.remove("is-danke-queen-open");
-    }, 4200);
-    dankeQueenParticleTimer = window.setTimeout(function () {
-      pop.classList.remove("is-queen-bursting");
-    }, 900);
-    dankeQueenInteractTimer = window.setTimeout(function () {
-      pop.classList.remove("is-queen-interacting");
-    }, 920);
-  }
-
-  function pressDankeQueenTrigger(trigger) {
-    if (!trigger || !trigger.classList.contains("is-danke-trigger")) return;
-    trigger.classList.add("is-trigger-pressing");
-    window.setTimeout(function () {
-      trigger.classList.remove("is-trigger-pressing");
-    }, 170);
-    triggerDankeQueenPop();
-  }
-
   function renderGallery() {
     var groups = [
       { key: "east", title: "东区", note: "东区出没的校园咪", types: ["LOVE-U", "KISS", "GLOW", "IDEA", "RUNNER"] },
@@ -1235,6 +1126,11 @@
     warmSurpriseImages: warmDazuoSurpriseImages,
     renderResult: renderResult
   });
+  dankeQueenController = window.CATBTI_EFFECTS.createDankeQueenController({
+    warmImages: warmDankeQueenImages,
+    playEntrySound: function () { playMeowNow(560, 0.24); },
+    interactionAudioSource: "audio/danke-interact.mp3"
+  });
 
   fillConfiguredContent();
   renderGallery();
@@ -1291,15 +1187,15 @@
   });
   document.getElementById("retryButton").addEventListener("click", function () { startTest(true); });
   document.getElementById("resultTitle").addEventListener("click", function (event) {
-    pressDankeQueenTrigger(event.currentTarget);
+    dankeQueenController.pressTrigger(event.currentTarget);
   });
   document.getElementById("resultTitle").addEventListener("keydown", function (event) {
     if (event.key !== "Enter" && event.key !== " ") return;
     if (!event.currentTarget.classList.contains("is-danke-trigger")) return;
     event.preventDefault();
-    pressDankeQueenTrigger(event.currentTarget);
+    dankeQueenController.pressTrigger(event.currentTarget);
   });
-  document.querySelector(".danke-queen-cat").addEventListener("click", interactDankeQueenCat);
+  document.querySelector(".danke-queen-cat").addEventListener("click", dankeQueenController.interact);
   document.getElementById("photoPrev").addEventListener("click", function () { showPhoto(currentPhotoIndex - 1); });
   document.getElementById("photoNext").addEventListener("click", function () { showPhoto(currentPhotoIndex + 1); });
   document.getElementById("photoPagination").addEventListener("click", function (event) {
