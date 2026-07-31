@@ -2,6 +2,11 @@
   "use strict";
 
   var config = window.CATBTI_CONFIG;
+  var runtime = window.CATBTI_RUNTIME;
+  var setDeferredImageSource = runtime.setDeferredImageSource;
+  var hydrateDeferredImages = runtime.hydrateDeferredImages;
+  var runWhenIdle = runtime.runWhenIdle;
+  var preloadImage = runtime.preloadImage;
   var views = Array.from(document.querySelectorAll(".view"));
   var currentQuestion = 0;
   var answers = {};
@@ -28,7 +33,7 @@
   var dankeQueenInteractTimer = null;
   var dankeQueenParticleTimer = null;
   var currentDankeQueenAudio = null;
-  var fateTransitionTimers = [];
+  var fateTransitionTimeline = runtime.createTimerGroup();
   var fateTransitionAudio = null;
   var fateTransitionInProgress = false;
   var discPeekResizeFrame = null;
@@ -465,19 +470,8 @@
     fateTransitionAudio.currentTime = 0;
   }
 
-  function clearFateTransitionTimers() {
-    fateTransitionTimers.forEach(window.clearTimeout);
-    fateTransitionTimers = [];
-  }
-
-  function scheduleFateTransition(callback, delay) {
-    var timer = window.setTimeout(callback, delay);
-    fateTransitionTimers.push(timer);
-    return timer;
-  }
-
   function resetFateTransition() {
-    clearFateTransitionTimers();
+    fateTransitionTimeline.clear();
     stopFateTransitionAudio();
     fateTransitionInProgress = false;
     document.body.classList.remove("is-fate-transition-open");
@@ -497,7 +491,7 @@
       transition.classList.remove("is-active");
       transition.setAttribute("aria-hidden", "true");
     }
-    scheduleFateTransition(function () {
+    fateTransitionTimeline.schedule(function () {
       if (transition) transition.classList.remove("is-rolling", "is-revealed", "is-hit", "is-miss");
       fateTransitionInProgress = false;
       stopFateTransitionAudio();
@@ -513,7 +507,7 @@
       return;
     }
 
-    clearFateTransitionTimers();
+    fateTransitionTimeline.clear();
     warmFateTransitionAssets();
     if (result.secretSurprise) warmDazuoSurpriseImages();
     fateTransitionInProgress = true;
@@ -530,7 +524,7 @@
     var revealDelay = reducedMotion ? 280 : 4250;
     var finishDelay = reducedMotion ? 980 : (result.secretSurprise ? 5450 : 6500);
 
-    scheduleFateTransition(function () {
+    fateTransitionTimeline.schedule(function () {
       transition.classList.add("is-revealed");
       if (result.secretSurprise) {
         transition.classList.add("is-hit");
@@ -541,7 +535,7 @@
       }
     }, revealDelay);
 
-    scheduleFateTransition(function () {
+    fateTransitionTimeline.schedule(function () {
       finishFateTransition(result);
     }, finishDelay);
   }
@@ -549,33 +543,6 @@
   function getCatImages(cat) {
     if (cat.imagePending) return [];
     return cat.images && cat.images.length ? cat.images : (cat.image ? [cat.image] : []);
-  }
-
-  function setDeferredImageSource(image) {
-    if (!image || !image.dataset || !image.dataset.src || image.src) return false;
-    image.src = image.dataset.src;
-    image.removeAttribute("data-src");
-    return true;
-  }
-
-  function hydrateDeferredImages(root, limit) {
-    if (!root) return;
-    Array.from(root.querySelectorAll("img[data-src]")).slice(0, limit || undefined).forEach(setDeferredImageSource);
-  }
-
-  function runWhenIdle(callback, timeout) {
-    if ("requestIdleCallback" in window) {
-      window.requestIdleCallback(callback, { timeout: timeout || 1200 });
-      return;
-    }
-    window.setTimeout(callback, Math.min(timeout || 360, 700));
-  }
-
-  function preloadImage(source) {
-    if (!source) return;
-    var image = new Image();
-    image.decoding = "async";
-    image.src = source;
   }
 
   function preloadResultPhoto(index) {
