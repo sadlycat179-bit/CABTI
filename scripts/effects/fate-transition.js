@@ -32,7 +32,6 @@
     }
 
     function warm() {
-      runtime.hydrateDeferredImages(document.getElementById("fateTransition"));
       var audio = getAudio();
       if (audio.readyState === 0) audio.load();
     }
@@ -95,7 +94,15 @@
 
       timeline.clear();
       warm();
-      if (result.secretSurprise) options.warmSurpriseImages();
+      if (result.secretSurprise) {
+        options.warmSurpriseImages("gift");
+      } else {
+        runtime.hydrateDeferredImages(
+          transition.querySelector(".fate-escape-cats"),
+          undefined,
+          { priority: "high" }
+        );
+      }
       inProgress = true;
       document.body.classList.add("is-fate-transition-open");
       transition.classList.remove("is-rolling", "is-revealed", "is-hit", "is-miss");

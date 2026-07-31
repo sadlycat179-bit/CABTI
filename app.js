@@ -7,6 +7,8 @@
   var hydrateDeferredImages = runtime.hydrateDeferredImages;
   var runWhenIdle = runtime.runWhenIdle;
   var preloadImage = runtime.preloadImage;
+  var getImageAsset = runtime.getImageAsset;
+  var loadImageElement = runtime.loadImageElement;
   var views = Array.from(document.querySelectorAll(".view"));
   var currentQuestion = 0;
   var answers = {};
@@ -58,8 +60,8 @@
     if (name === "home") resumeDiscPeeks(650);
     else suspendDiscPeek();
     if (name === "gallery") {
-      hydrateDeferredImages(document.querySelector(".student-guide"), 1);
-      primeGalleryImages(6);
+      hydrateDeferredImages(document.querySelector(".student-guide"), 1, { priority: "normal" });
+      primeGalleryImages(window.innerWidth <= 640 ? 2 : 3);
     }
     window.scrollTo(0, 0);
     document.getElementById("app").focus({ preventScroll: true });
@@ -171,6 +173,17 @@
       return;
     }
 
+    var peekImage = peek.querySelector("img");
+    if (peekImage && peekImage.dataset.src) {
+      loadImageElement(peekImage, peekImage.dataset.src, {
+        priority: "high",
+        sizes: "(max-width: 640px) 112px, 148px"
+      }).then(function () {
+        if (!discPeekActiveCat && document.body.dataset.view === "home") showRandomDiscPeek(catKey);
+      });
+      return;
+    }
+
     state.angle = chooseDiscPeekAngle(catKey);
     if (!layoutDiscPeek(catKey)) {
       scheduleDiscPeek(300);
@@ -226,9 +239,6 @@
 
   function resumeDiscPeeks(delay) {
     if (discPeekActiveCat) return;
-    runWhenIdle(function () {
-      hydrateDeferredImages(document.querySelector(".hero-visual"));
-    }, 1200);
     scheduleDiscPeek(delay);
   }
 
@@ -415,20 +425,38 @@
     return cat.images && cat.images.length ? cat.images : (cat.image ? [cat.image] : []);
   }
 
-  function preloadResultPhoto(index) {
-    if (!resultPhotoImages.length) return;
+  function responsiveImageAttributes(source, sizes, deferred, priority) {
+    if (deferred) {
+      return 'data-src="' + source + '" data-sizes="' + sizes + '" loading="lazy"';
+    }
+    var asset = getImageAsset(source);
+    var attributes = 'src="' + asset.src + '"';
+    if (asset.srcset) attributes += ' srcset="' + asset.srcset + '" sizes="' + sizes + '"';
+    if (asset.width) attributes += ' width="' + asset.width + '"';
+    if (asset.height) attributes += ' height="' + asset.height + '"';
+    if (priority) attributes += ' fetchpriority="' + priority + '"';
+    return attributes;
+  }
+
+  function preloadResultPhoto(index, priority) {
+    if (!resultPhotoImages.length) return Promise.resolve(false);
     var normalizedIndex = (index + resultPhotoImages.length) % resultPhotoImages.length;
     var image = document.querySelector('#resultPhotoTrack img[data-photo-index="' + normalizedIndex + '"]');
-    if (image) setDeferredImageSource(image);
+    if (!image) return Promise.resolve(false);
+    if (!image.dataset.src) return runtime.decodeImage(image);
+    return loadImageElement(image, image.dataset.src, {
+      priority: priority || "normal",
+      sizes: "(max-width: 900px) 88vw, 600px"
+    });
   }
 
   function preloadNearbyResultPhotos(index) {
     if (!resultPhotoImages.length) return;
-    preloadResultPhoto(index);
-    runWhenIdle(function () {
-      preloadResultPhoto(index + 1);
-      if (resultPhotoImages.length > 2) preloadImage(resultPhotoImages[(index + 2) % resultPhotoImages.length]);
-    }, 520);
+    preloadResultPhoto(index, "high").then(function () {
+      runWhenIdle(function () {
+        preloadResultPhoto(index + 1, "idle");
+      }, 720);
+    });
   }
 
   function initGalleryLazyImages() {
@@ -442,25 +470,37 @@
       galleryImageObserver = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
           if (!entry.isIntersecting) return;
-          setDeferredImageSource(entry.target);
+          setDeferredImageSource(entry.target, { priority: "normal" });
           galleryImageObserver.unobserve(entry.target);
         });
-      }, { rootMargin: "260px 0px" });
+      }, { rootMargin: "120px 0px" });
     }
     images.forEach(function (image) { galleryImageObserver.observe(image); });
   }
 
   function primeGalleryImages(count) {
-    hydrateDeferredImages(document.getElementById("catGrid"), count || 6);
+    hydrateDeferredImages(document.getElementById("catGrid"), count || 3, { priority: "idle" });
     initGalleryLazyImages();
   }
 
-  function warmDazuoSurpriseImages() {
-    hydrateDeferredImages(document.getElementById("dazuoSurprise"));
+  function warmDazuoSurpriseImages(stage) {
+    var surprise = document.getElementById("dazuoSurprise");
+    if (!surprise) return Promise.resolve([]);
+    if (stage === "gift") {
+      return hydrateDeferredImages(surprise.querySelector(".gift-box"), 1, { priority: "high" });
+    }
+    if (stage === "cats") {
+      return hydrateDeferredImages(surprise.querySelector(".cat-duel-stage"), undefined, { priority: "high" });
+    }
+    return hydrateDeferredImages(surprise, undefined, { priority: "normal" });
   }
 
-  function warmDankeQueenImages() {
-    hydrateDeferredImages(document.getElementById("dankeQueenPop"));
+  function warmDankeQueenImages(priority) {
+    return hydrateDeferredImages(
+      document.getElementById("dankeQueenPop"),
+      undefined,
+      { priority: priority || "normal" }
+    );
   }
 
   function updatePhotoPagination(index) {
@@ -490,9 +530,7 @@
     currentPhotoCount = images.length;
     currentPhotoIndex = 0;
     track.innerHTML = images.length ? images.map(function (image, index) {
-      var sourceAttribute = index === 0 ? 'src="' + image + '"' : 'data-src="' + image + '"';
-      var priority = index === 0 ? ' fetchpriority="high"' : ' loading="lazy"';
-      return '<img ' + sourceAttribute + ' data-photo-index="' + index + '" alt="' + cat.name + '的照片 ' + (index + 1) + '" decoding="async"' + priority + ' style="object-fit:contain">';
+      return '<img ' + responsiveImageAttributes(image, "(max-width: 900px) 88vw, 600px", true) + ' data-photo-index="' + index + '" alt="' + cat.name + '的照片 ' + (index + 1) + '" decoding="async" style="object-fit:contain">';
     }).join("") : '<div class="photo-placeholder" role="img" aria-label="' + cat.name + '的照片待补充"><span>ฅ</span><strong>' + cat.name + '</strong><small>照片待补充</small></div>';
     pagination.innerHTML = images.map(function (_, index) {
       return '<button type="button" data-photo-index="' + index + '" aria-label="查看第 ' + (index + 1) + ' 张照片" aria-current="' + (index === 0) + '"></button>';
@@ -654,10 +692,10 @@
     showView("result");
     startReceiptPrint();
     if (cat.type === "KISS") {
-      runWhenIdle(warmDankeQueenImages, 1600);
+      window.setTimeout(function () { warmDankeQueenImages("idle"); }, 1400);
     }
     if (showSecretSurprise) {
-      runWhenIdle(warmDazuoSurpriseImages, 360);
+      runWhenIdle(function () { warmDazuoSurpriseImages("gift"); }, 360);
       surpriseDelayTimer = window.setTimeout(function () {
         duoSurpriseController.prepare(surprise, portrait);
       }, 720);
@@ -865,7 +903,7 @@
       var index = config.cats.indexOf(cat);
       var image = getCatImages(cat)[0];
       var imageMarkup = image
-        ? '<img data-src="' + image + '" alt="' + cat.name + '" loading="lazy" decoding="async" style="object-fit:contain">'
+        ? '<img ' + responsiveImageAttributes(image, "(max-width: 640px) 42vw, 260px", true) + ' alt="' + cat.name + '" decoding="async" style="object-fit:contain">'
         : '<span class="card-photo-placeholder"><i>ฅ</i><b>照片待补充</b></span>';
       return '<button class="cat-card" type="button" data-cat-index="' + index + '" aria-label="查看' + cat.name + '的资料">' +
         '<span class="card-image">' + imageMarkup + '<i>' + cat.type + "</i></span>" +
@@ -902,8 +940,24 @@
     var slides = track ? track.querySelectorAll(".dialog-cover") : [];
     if (!track || !slides.length || !track.clientWidth) return;
     var nextIndex = (index + slides.length) % slides.length;
+    var nextImage = slides[nextIndex];
+    if (nextImage && nextImage.dataset.src) {
+      loadImageElement(nextImage, nextImage.dataset.src, {
+        priority: "high",
+        sizes: "(max-width: 720px) 92vw, 620px"
+      });
+    }
     track.scrollTo({ left: track.clientWidth * nextIndex, behavior: behavior || "smooth" });
     updateDialogPhotoPagination(host, nextIndex);
+    runWhenIdle(function () {
+      var followingImage = slides[(nextIndex + 1) % slides.length];
+      if (followingImage && followingImage.dataset.src) {
+        loadImageElement(followingImage, followingImage.dataset.src, {
+          priority: "idle",
+          sizes: "(max-width: 720px) 92vw, 620px"
+        });
+      }
+    }, 780);
   }
 
   function openCatDialog(index) {
@@ -912,8 +966,8 @@
     var imageMarkup = images.length
       ? '<div class="dialog-photo-carousel' + (images.length > 1 ? ' has-multiple-photos' : '') + '">' +
           '<div class="dialog-photo-track">' + images.map(function (image, imageIndex) {
-            var loadingAttributes = imageIndex === 0 ? ' fetchpriority="high"' : ' loading="lazy"';
-            return '<img class="dialog-cover" src="' + image + '" alt="' + cat.name + '的照片 ' + (imageIndex + 1) + '" decoding="async"' + loadingAttributes + '>';
+            var imageAttributes = responsiveImageAttributes(image, "(max-width: 720px) 92vw, 620px", imageIndex !== 0, imageIndex === 0 ? "high" : "");
+            return '<img class="dialog-cover" ' + imageAttributes + ' alt="' + cat.name + '的照片 ' + (imageIndex + 1) + '" decoding="async">';
           }).join("") + '</div>' +
           (images.length > 1
             ? '<button class="dialog-photo-nav dialog-photo-prev" type="button" data-dialog-photo-direction="-1" aria-label="上一张照片" title="上一张"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>' +
@@ -926,11 +980,11 @@
       : '<span class="dialog-photo-placeholder"><i>ฅ</i><b>' + cat.name + '照片待补充</b></span>';
     var effectName = ["peek", "bounce", "tilt", "float"][index % 4];
     var specialMarkup = cat.introEffect === "big-face"
-      ? '<div class="cat-intro-effect" aria-hidden="true"><img data-src="images/updated-cats/zuoxiajiao-surprise-cutout.png" alt="" decoding="async"></div>'
+      ? '<div class="cat-intro-effect" aria-hidden="true"><img data-src="images/updated-cats/zuoxiajiao-surprise-cutout.png" data-sizes="(max-width: 720px) 92vw, 620px" alt="" decoding="async"></div>'
       : "";
     var biographyMarkup = getStoryBlocks(cat).map(function (block) {
       if (block.image) {
-        return '<img class="dialog-story-image" src="' + block.image + '" alt="' + cat.name + '的猫咪小传配图" loading="lazy">';
+        return '<img class="dialog-story-image" ' + responsiveImageAttributes(block.image, "(max-width: 720px) 88vw, 560px", true) + ' alt="' + cat.name + '的猫咪小传配图">';
       }
       return "<p>" + block.text + "</p>";
     }).join("");
@@ -947,6 +1001,9 @@
     var host = document.querySelector(".dialog-image");
     prepareCatIntroEffect(host, cat);
     dialog.showModal();
+    runWhenIdle(function () {
+      hydrateDeferredImages(dialog.querySelector(".dialog-copy"), undefined, { priority: "idle" });
+    }, 900);
     var dialogTrack = host.querySelector(".dialog-photo-track");
     if (dialogTrack) {
       dialogTrack.addEventListener("scroll", function () {
@@ -990,6 +1047,13 @@
   fillConfiguredContent();
   renderGallery();
   document.body.dataset.view = "home";
+  var heroCoverImage = document.querySelector(".hero-cover-frame img[data-src]");
+  if (heroCoverImage) {
+    loadImageElement(heroCoverImage, heroCoverImage.dataset.src, {
+      priority: "high",
+      sizes: "(max-width: 760px) 92vw, 620px"
+    });
+  }
 
   var previewType = new URLSearchParams(window.location.search).get("result");
   var previewAliases = {
@@ -1044,6 +1108,12 @@
   document.getElementById("resultTitle").addEventListener("click", function (event) {
     dankeQueenController.pressTrigger(event.currentTarget);
   });
+  document.getElementById("resultTitle").addEventListener("pointerenter", function (event) {
+    if (event.currentTarget.classList.contains("is-danke-trigger")) warmDankeQueenImages();
+  }, { passive: true });
+  document.getElementById("resultTitle").addEventListener("pointerdown", function (event) {
+    if (event.currentTarget.classList.contains("is-danke-trigger")) warmDankeQueenImages();
+  }, { passive: true });
   document.getElementById("resultTitle").addEventListener("keydown", function (event) {
     if (event.key !== "Enter" && event.key !== " ") return;
     if (!event.currentTarget.classList.contains("is-danke-trigger")) return;

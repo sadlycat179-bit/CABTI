@@ -64,6 +64,7 @@
     function start(surprise, portrait) {
       if (!surprise || !portrait || portrait.classList.contains("is-playing-surprise")) return;
       clearTimers();
+      options.warmImages("cats");
       portrait.classList.remove("is-surprise-complete");
       portrait.classList.add("is-playing-surprise");
       document.body.classList.add("is-secret-surprise-open");
@@ -111,7 +112,7 @@
     function prepare(surprise, portrait) {
       if (!surprise || !portrait) return;
       if (surprise.parentElement !== document.body) document.body.appendChild(surprise);
-      options.warmImages();
+      options.warmImages("gift");
       portrait.classList.add("is-secret-surprise");
       document.body.classList.add("is-secret-surprise-open");
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
