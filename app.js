@@ -835,7 +835,7 @@
   }
 
   function playCatMeowAudio() {
-    var meow = new Audio("audio/cat-meow.mp3");
+    var meow = new Audio("audio/dazuo-interact.mp3");
     meow.volume = 0.62;
     document.body.dataset.catMeowAudio = "starting";
     return meow.play().then(function () {

@@ -1,32 +1,56 @@
-# 结果页真实猫咪素材清单
+# 当前猫咪素材清单
 
-更新时间：2026-07-24
+更新时间：2026-08-01
 
-本目录收录除大佐外的 15 只结果猫咪素材。图片均从“喵栖梧猫德class”的小红书、抖音或微信公众号公开内容中整理；大佐继续使用用户提供并已抠图的 `../gent-dazuo.png`。
+本表与 `config.js` 当前使用的 16 种结果猫格保持一致。结果页会同时使用 `images/real-cats`、`images/updated-cats` 和 `images/docx-update` 中的照片；网页实际加载的是 `images/optimized` 中自动生成的响应式 WebP。
 
-## 素材与来源
+大佐、喇叭和蛋壳女王属于互动彩蛋素材，不占用结果猫格名额：
 
-| 代号 | 猫咪 | 文件 | 来源平台 | 对应内容 |
-| --- | --- | --- | --- | --- |
-| LOVE-U | 蛋挞 | `love-u-danta.webp` | 小红书 | [蓝氏毕业季｜待领养：蛋挞](https://www.xiaohongshu.com/explore/6a13fd060000000036019c82) |
-| HIHI | 大夹子 | `hihi-dajiazi.webp` | 小红书 | [蓝氏毕业季｜待领养：大夹子](https://www.xiaohongshu.com/explore/6a131eb80000000038020584) |
-| SALT | 薄荷 | `salt-bohe.jpg` | 微信公众号 | [北区——薄荷](https://mp.weixin.qq.com/s/5_kQaNmWCy4BTkAnJU1lYQ) |
-| LYFE | 笑笑 | `lyfe-xiaoxiao.webp` | 小红书 | [蓝氏毕业季｜待领养：笑笑](https://www.xiaohongshu.com/explore/6a116fd0000000003601efdc) |
-| EATR | 乌云 | `eatr-wuyun.jpg` | 抖音 | [诚实一口，乌云绝育！](https://www.douyin.com/video/7618181410361221254) |
-| RUNER | 蛋饼 | `runer-danbing.jpg` | 微信公众号 | [东区——蛋饼](https://mp.weixin.qq.com/s/4vxXi5mg9UCpnp3meWhP9Q) |
-| XXXL | 三宝 | `xxxl-sanbao.jpg` | 抖音 | [三宝帅猫来也！](https://www.douyin.com/video/7633757471785914438) |
-| BOSS | 大逼斗 | `boss-dabidou.jpg` | 微信公众号 | [游侠——大逼斗](https://mp.weixin.qq.com/s/qM7rVWUnfj0fIAunVTWqkw) |
-| SONG | 黛玉 | `song-daiyu.webp` | 小红书 | [黛玉自愿放弃高考](https://www.xiaohongshu.com/explore/6a24df7f0000000015027b25) |
-| KISS | 左下角 | `kiss-zuoxiajiao.webp` | 小红书 | [蓝氏毕业季｜待领养：左下角](https://www.xiaohongshu.com/explore/6a14056b000000003803491c) |
-| GLOW | 青橘 | `glow-qingju.jpg` | 微信公众号 | [东区——青橘](https://mp.weixin.qq.com/s/3GkibDaqij3V_tdHrFy1jw) |
-| IDEA | 蛋黄 | `idea-danhuang.jpg` | 微信公众号 | [东区——蛋黄](https://mp.weixin.qq.com/s/ZiqAgDGFlTpC9UP9Li6VXQ) |
-| QUEEN | 蛋壳 | `queen-danke.jpg` | 微信公众号 | [东区——蛋壳](https://mp.weixin.qq.com/s/GgzDTLtFR0RBaQqjRTQJ3A) |
-| FREE | 四喜 | `free-sixi.jpg` | 微信公众号 | [北区——四喜](https://mp.weixin.qq.com/s/lG2cG2RB6TO6ccxeVD1EKw) |
-| LAMP | 桔子灯 | `lamp-juzideng.webp` | 小红书 | [蓝氏毕业季｜待领养：桔子灯](https://www.xiaohongshu.com/explore/6a127f8100000000370358a7) |
+- 大佐：`images/surprise-dazuo.png`
+- 喇叭：`images/surprise-laba.png`
+- 蛋壳女王：`images/danke-queen-royal.png`
+- 蛋壳王座：`images/danke-queen-throne.png`
 
-## 使用说明
+## 结果页当前素材
 
-- `preview-all-cats.jpg` 是 15 只猫咪的快速总览，不用于结果页。
-- 乌云和三宝暂时使用官方抖音作品中提取的清晰静帧，其余文件来自官方图文内容。
-- 所有素材都已进行肉眼核对，能够清楚辨认对应猫咪；分辨率最低为 576×1024，满足当前结果页原型使用。
-- 正式公开发布前，建议由项目负责人向“喵栖梧猫德class”确认图片转载与展示授权，并在最终页面或项目说明中保留来源署名。
+| 代号 | 猫咪 | 当前文件 |
+| --- | --- | --- |
+| LOVE-U | 蛋挞 | `updated-cats/danta-new-1.webp`、`danta-new-2.webp`、`danta-new-3.webp`、`danta.jpg`；`real-cats/love-u-danta.webp` |
+| HIHI | 大夹子 | `real-cats/hihi-dajiazi.webp` |
+| SALT | 薄荷 | `updated-cats/bohe.jpg`；`real-cats/salt-bohe.jpg` |
+| CHIL | 笑笑 | `updated-cats/xiaoxiao.jpg`；`real-cats/lyfe-xiaoxiao.webp` |
+| EATR | 乌云 | `updated-cats/wuyun.jpg` |
+| DEVIL | 四喜 | `real-cats/free-sixi.jpg` |
+| XXXL | 三宝 | `updated-cats/sanbao-1.jpg`、`sanbao-2.jpg`、`sanbao-3.jpg`；`real-cats/xxxl-sanbao.jpg` |
+| BOSS | 大逼斗 | `real-cats/boss-dabidou.jpg` |
+| SONG | 黛玉 | `updated-cats/daiyu-1.jpg`、`daiyu-2.jpg`；`real-cats/song-daiyu.webp` |
+| KISS | 左下角 | `updated-cats/zuoxiajiao-cover.jpg`；`real-cats/kiss-zuoxiajiao.webp` |
+| GLOW | 青桔 | `updated-cats/qingju.jpg`；`real-cats/glow-qingju.jpg` |
+| IDEA | 蛋黄 | `real-cats/idea-danhuang.jpg` |
+| IDOL | 饭包 | `updated-cats/fanbao.jpg` |
+| DRINK | 养乐多 | `updated-cats/yangleduo-new.jpg` |
+| LAMP | 桔子灯 | `updated-cats/juzideng-new.png` |
+| RUNNER | 蛋饼 | `updated-cats/danbing.jpg`；`real-cats/runer-danbing.jpg` |
+
+## 已记录的公开来源
+
+- 蛋挞：[小红书公开内容](https://www.xiaohongshu.com/explore/6a13fd060000000036019c82)
+- 大夹子：[小红书公开内容](https://www.xiaohongshu.com/explore/6a131eb80000000038020584)
+- 薄荷：[微信公众号文章](https://mp.weixin.qq.com/s/5_kQaNmWCy4BTkAnJU1lYQ)
+- 笑笑：[小红书公开内容](https://www.xiaohongshu.com/explore/6a116fd0000000003601efdc)
+- 蛋饼：[微信公众号文章](https://mp.weixin.qq.com/s/4vxXi5mg9UCpnp3meWhP9Q)
+- 三宝：[抖音公开内容](https://www.douyin.com/video/7633757471785914438)
+- 大逼斗：[微信公众号文章](https://mp.weixin.qq.com/s/qM7rVWUnfj0fIAunVTWqkw)
+- 黛玉：[小红书公开内容](https://www.xiaohongshu.com/explore/6a24df7f0000000015027b25)
+- 左下角：[小红书公开内容](https://www.xiaohongshu.com/explore/6a14056b000000003803491c)
+- 青桔：[微信公众号文章](https://mp.weixin.qq.com/s/3GkibDaqij3V_tdHrFy1jw)
+- 蛋黄：[微信公众号文章](https://mp.weixin.qq.com/s/ZiqAgDGFlTpC9UP9Li6VXQ)
+- 四喜：[微信公众号文章](https://mp.weixin.qq.com/s/lG2cG2RB6TO6ccxeVD1EKw)
+- 桔子灯：[小红书公开内容](https://www.xiaohongshu.com/explore/6a127f8100000000370358a7)
+
+## 维护说明
+
+- 结果页素材以 `config.js` 为准；修改后应同步更新本表。
+- 不再保留未被页面引用的旧照片、总览拼图和 SVG 占位图。
+- 新增或替换图片后运行 `python tools/generate_responsive_images.py`，更新响应式 WebP 和清单。
+- 正式公开发布前，应由项目负责人确认图片转载与展示授权，并保留来源署名。
