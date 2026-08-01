@@ -238,7 +238,7 @@ window.CATBTI_CONFIG = {
       quote: "湖工唯一大面包塑。"
     },
     {
-      type: "EATR",
+      type: "EATER",
       name: "乌云",
       title: "吞噬者",
       traits: { attitude: "friendly", action: "observer", area: "roam", pursuit: "food" },

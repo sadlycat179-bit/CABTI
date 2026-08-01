@@ -535,7 +535,7 @@
       { key: "east", title: "东区", note: "东区出没的校园咪", types: ["LOVE-U", "KISS", "GLOW", "IDEA", "RUNNER"] },
       { key: "west", title: "西区", note: "西区出没的校园咪", types: ["HIHI"] },
       { key: "north", title: "北区", note: "北区出没的校园咪", types: ["SALT", "CHIL", "DEVIL", "XXXL", "SONG", "DRINK", "LAMP"] },
-      { key: "ranger", title: "游侠", note: "喜欢在校园里到处巡游", types: ["EATR", "BOSS", "IDOL"] }
+      { key: "ranger", title: "游侠", note: "喜欢在校园里到处巡游", types: ["EATER", "BOSS", "IDOL"] }
     ];
 
     function renderCatCard(cat) {
@@ -712,6 +712,7 @@
 
   var previewType = new URLSearchParams(window.location.search).get("result");
   var previewAliases = {
+    EATR: "EATER",
     QUEEN: "KISS",
     FREE: "DEVIL",
     LYFE: "CHIL",

@@ -330,13 +330,13 @@
     "sourceBytes": 2061856,
     "optimizedBytes": 442002
   },
-  "assets/images/cover/cover.png": {
-    "src": "assets/images/generated/cover/cover-png-640.webp",
-    "srcset": "assets/images/generated/cover/cover-png-320.webp 320w, assets/images/generated/cover/cover-png-640.webp 640w",
-    "width": 640,
-    "height": 640,
-    "sourceBytes": 390249,
-    "optimizedBytes": 71868
+  "assets/images/cover/cover-wuyun.jpg": {
+    "src": "assets/images/generated/cover/cover-wuyun-jpg-1200.webp",
+    "srcset": "assets/images/generated/cover/cover-wuyun-jpg-320.webp 320w, assets/images/generated/cover/cover-wuyun-jpg-720.webp 720w, assets/images/generated/cover/cover-wuyun-jpg-1200.webp 1200w",
+    "width": 1200,
+    "height": 1598,
+    "sourceBytes": 180301,
+    "optimizedBytes": 110748
   },
   "assets/images/guides/danhuang-guide-cutout.png": {
     "src": "assets/images/generated/guides/danhuang-guide-cutout-png-1200.webp",

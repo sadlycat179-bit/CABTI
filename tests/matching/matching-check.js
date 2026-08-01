@@ -33,7 +33,7 @@ const expectedCats = {
   HIHI: ["大夹子", "friendly", "active", "west", "adored"],
   SALT: ["薄荷", "friendly", "observer", "north", "freedom"],
   CHIL: ["笑笑", "friendly", "observer", "north", "life"],
-  EATR: ["乌云", "friendly", "observer", "roam", "food"],
+  EATER: ["乌云", "friendly", "observer", "roam", "food"],
   DEVIL: ["四喜", "cautious", "observer", "north", "freedom"],
   XXXL: ["三宝", "friendly", "active", "north", "food"],
   BOSS: ["大逼斗", "cautious", "observer", "roam", "adored"],
