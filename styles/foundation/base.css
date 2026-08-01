@@ -55,7 +55,7 @@ button,
   user-select: none;
   touch-action: manipulation;
 }
-img { display: block; max-width: 100%; }
+img { display: block; max-width: 100%; height: auto; }
 
 .ambient {
   position: fixed;
@@ -299,11 +299,11 @@ main { min-height: calc(100vh - 158px); outline: none; }
 .result-heading p { margin: 18px 0 70px; font-size: 24px; font-weight: 900; }
 .result-layout { display: grid; grid-template-columns: minmax(390px, .9fr) minmax(0, 1.18fr); gap: 60px; align-items: start; }
 .result-portrait-wrap { position: relative; margin-top: 8px; padding: 14px; border: 1px solid var(--line); border-radius: 28px; background: #f7ead5; transform: rotate(-1.2deg); box-shadow: 0 16px 40px rgba(107, 72, 50, 0.11); }
-.result-photo-stage { position: relative; overflow: hidden; border-radius: 20px; background: #f4eadf; }
-.result-photo-track { display: flex; overflow-x: auto; overscroll-behavior-inline: contain; scroll-snap-type: x mandatory; scrollbar-width: none; touch-action: pan-x pan-y; }
+.result-photo-stage { position: relative; overflow: hidden; aspect-ratio: 4 / 5; border-radius: 20px; background: #f4eadf; }
+.result-photo-track { position: absolute; inset: 0; width: 100%; height: 100%; display: flex; overflow-x: auto; overscroll-behavior-inline: contain; scroll-snap-type: x mandatory; scrollbar-width: none; touch-action: pan-x pan-y; }
 .result-photo-track::-webkit-scrollbar { display: none; }
-.result-photo-track img { flex: 0 0 100%; width: 100%; aspect-ratio: 4 / 5; scroll-snap-align: start; scroll-snap-stop: always; background: #f4eadf; }
-.photo-placeholder { flex: 0 0 100%; width: 100%; aspect-ratio: 4 / 5; display: grid; place-content: center; justify-items: center; gap: 8px; padding: 24px; color: #52685a; background: repeating-linear-gradient(-45deg, #fff8e8 0 14px, #f5ead1 14px 28px); text-align: center; }
+.result-photo-track img { flex: 0 0 100%; width: 100%; height: 100%; object-fit: contain; scroll-snap-align: start; scroll-snap-stop: always; background: #f4eadf; }
+.photo-placeholder { flex: 0 0 100%; width: 100%; height: 100%; display: grid; place-content: center; justify-items: center; gap: 8px; padding: 24px; color: #52685a; background: repeating-linear-gradient(-45deg, #fff8e8 0 14px, #f5ead1 14px 28px); text-align: center; }
 .photo-placeholder span { width: 72px; height: 72px; display: grid; place-items: center; border: 2px solid #52685a; border-radius: 50%; background: #fffdf4; color: #d06c4c; font-size: 38px; transform: rotate(-8deg); }
 .photo-placeholder strong { font-family: var(--receipt-slab); font-size: 30px; }.photo-placeholder small { font-size: 13px; font-weight: 900; }
 .photo-nav { position: absolute; top: 50%; z-index: 2; width: 42px; height: 42px; display: grid; place-items: center; padding: 0; border: 1px solid rgba(73, 53, 45, .14); border-radius: 50%; color: var(--brown); background: rgba(255, 253, 248, .9); box-shadow: 0 7px 18px rgba(73, 53, 45, .12); cursor: pointer; transform: translateY(-50%); transition: background 180ms ease, transform 180ms ease; }
