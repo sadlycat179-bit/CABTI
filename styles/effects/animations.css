@@ -1,0 +1,488 @@
+/* Fate dice transition between the final answer and the result */
+body.is-fate-transition-open {
+  overflow: hidden;
+}
+
+.fate-transition {
+  position: fixed;
+  z-index: 30000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  min-width: 320px;
+  overflow: hidden;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  isolation: isolate;
+  transition: opacity .34s ease, visibility .34s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fate-transition.is-active {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.fate-transition-backdrop {
+  position: absolute;
+  z-index: -2;
+  inset: -8%;
+  background:
+    radial-gradient(circle at 50% 43%, rgba(246, 193, 94, .24), transparent 25%),
+    radial-gradient(circle at 22% 25%, rgba(237, 135, 92, .13), transparent 24%),
+    radial-gradient(circle at 78% 72%, rgba(170, 122, 65, .12), transparent 24%),
+    linear-gradient(145deg, #17110e 0%, #2b1c15 48%, #130f0d 100%);
+  transform: scale(1.02);
+}
+
+.fate-transition-backdrop::before,
+.fate-transition-backdrop::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(10px);
+  opacity: .55;
+}
+
+.fate-transition-backdrop::before {
+  width: min(72vw, 820px);
+  aspect-ratio: 1;
+  left: 50%;
+  top: 48%;
+  background: radial-gradient(circle, rgba(247, 196, 99, .18), transparent 67%);
+  transform: translate(-50%, -50%);
+  animation: fate-ambient-pulse 2.6s ease-in-out infinite;
+}
+
+.fate-transition-backdrop::after {
+  width: 8px;
+  height: 8px;
+  left: 17%;
+  top: 23%;
+  background: #ffe39c;
+  box-shadow:
+    14vw 7vh 0 rgba(255, 227, 156, .55),
+    39vw -9vh 0 rgba(255, 227, 156, .35),
+    62vw 11vh 0 rgba(255, 227, 156, .45),
+    72vw 39vh 0 rgba(255, 227, 156, .3),
+    52vw 57vh 0 rgba(255, 227, 156, .38),
+    24vw 55vh 0 rgba(255, 227, 156, .3),
+    5vw 38vh 0 rgba(255, 227, 156, .42);
+}
+
+.fate-transition-stage {
+  position: relative;
+  width: min(92vw, 760px);
+  min-height: min(82vh, 720px);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  justify-items: center;
+  align-items: center;
+  padding: clamp(36px, 6vh, 70px) 24px 42px;
+  color: #fff7df;
+  text-align: center;
+}
+
+.fate-copy {
+  position: relative;
+  z-index: 5;
+  max-width: 680px;
+  text-wrap: balance;
+}
+
+.fate-kicker {
+  display: block;
+  color: #f3c662;
+  font-size: clamp(17px, 2.2vw, 23px);
+  font-weight: 900;
+  letter-spacing: .16em;
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+.fate-copy h2 {
+  margin: 10px 0 0;
+  color: #fffaf0;
+  font-size: clamp(25px, 4.2vw, 44px);
+  font-weight: 900;
+  line-height: 1.36;
+  letter-spacing: .02em;
+  opacity: 0;
+  transform: translateY(18px);
+  text-shadow: 0 5px 24px rgba(0, 0, 0, .5);
+}
+
+.fate-transition.is-active .fate-kicker {
+  animation: fate-copy-in .68s .08s ease both;
+}
+
+.fate-transition.is-active .fate-copy h2 {
+  animation: fate-copy-in .68s .58s ease both;
+}
+
+.fate-dice-scene {
+  position: relative;
+  z-index: 4;
+  width: 150px;
+  height: 180px;
+  display: grid;
+  place-items: center;
+  margin-top: 22px;
+  perspective: 720px;
+  opacity: 0;
+}
+
+.fate-transition.is-rolling .fate-dice-scene {
+  animation: fate-dice-arrive 3.35s cubic-bezier(.18, .82, .24, 1) both;
+}
+
+.fate-dice {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  transform-style: preserve-3d;
+  transform: rotateX(-22deg) rotateY(31deg) rotateZ(4deg);
+}
+
+.fate-transition.is-rolling .fate-dice {
+  animation: fate-dice-spin 3.1s .15s cubic-bezier(.18, .7, .18, 1) both;
+}
+
+.fate-dice-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 6px;
+  padding: 14px;
+  border: 2px solid rgba(116, 66, 28, .72);
+  border-radius: 20px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, .82), transparent 38%),
+    linear-gradient(145deg, #fff4c8, #e9a848);
+  box-shadow:
+    inset -8px -10px 14px rgba(147, 75, 22, .22),
+    inset 6px 6px 10px rgba(255, 255, 255, .45);
+  backface-visibility: hidden;
+}
+
+.fate-dice-face i {
+  width: 14px;
+  height: 14px;
+  align-self: center;
+  justify-self: center;
+  border-radius: 50%;
+  background: #70432f;
+  box-shadow: inset 2px 2px 3px rgba(0, 0, 0, .28), 0 1px 0 rgba(255, 255, 255, .45);
+}
+
+.fate-dice-front { transform: translateZ(48px); }
+.fate-dice-back { transform: rotateY(180deg) translateZ(48px); }
+.fate-dice-right { transform: rotateY(90deg) translateZ(48px); }
+.fate-dice-left { transform: rotateY(-90deg) translateZ(48px); }
+.fate-dice-top { transform: rotateX(90deg) translateZ(48px); }
+.fate-dice-bottom { transform: rotateX(-90deg) translateZ(48px); }
+
+.fate-dice-front i { grid-area: 2 / 2; }
+.fate-dice-top i:nth-child(1) { grid-area: 1 / 1; }
+.fate-dice-top i:nth-child(2) { grid-area: 3 / 3; }
+.fate-dice-right i:nth-child(1) { grid-area: 1 / 1; }
+.fate-dice-right i:nth-child(2) { grid-area: 2 / 2; }
+.fate-dice-right i:nth-child(3) { grid-area: 3 / 3; }
+.fate-dice-left i:nth-child(1) { grid-area: 1 / 1; }
+.fate-dice-left i:nth-child(2) { grid-area: 1 / 3; }
+.fate-dice-left i:nth-child(3) { grid-area: 3 / 1; }
+.fate-dice-left i:nth-child(4) { grid-area: 3 / 3; }
+.fate-dice-bottom i:nth-child(1) { grid-area: 1 / 1; }
+.fate-dice-bottom i:nth-child(2) { grid-area: 1 / 3; }
+.fate-dice-bottom i:nth-child(3) { grid-area: 2 / 2; }
+.fate-dice-bottom i:nth-child(4) { grid-area: 3 / 1; }
+.fate-dice-bottom i:nth-child(5) { grid-area: 3 / 3; }
+.fate-dice-back i:nth-child(1) { grid-area: 1 / 1; }
+.fate-dice-back i:nth-child(2) { grid-area: 1 / 3; }
+.fate-dice-back i:nth-child(3) { grid-area: 2 / 1; }
+.fate-dice-back i:nth-child(4) { grid-area: 2 / 3; }
+.fate-dice-back i:nth-child(5) { grid-area: 3 / 1; }
+.fate-dice-back i:nth-child(6) { grid-area: 3 / 3; }
+
+.fate-dice-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: 17px;
+  width: 104px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .5);
+  filter: blur(8px);
+  transform: translateX(-50%) scale(.55);
+  opacity: .35;
+}
+
+.fate-transition.is-rolling .fate-dice-shadow {
+  animation: fate-shadow-roll 3.35s cubic-bezier(.18, .82, .24, 1) both;
+}
+
+.fate-transition.is-revealed .fate-dice {
+  animation: fate-dice-reveal .42s ease both;
+}
+
+.fate-outcome {
+  position: relative;
+  z-index: 9;
+  min-height: 48px;
+  margin: 6px 0 0;
+  color: #fff9e9;
+  font-size: clamp(22px, 3.5vw, 34px);
+  font-weight: 900;
+  line-height: 1.35;
+  letter-spacing: .02em;
+  opacity: 0;
+  transform: translateY(12px) scale(.96);
+  text-shadow: 0 4px 18px rgba(0, 0, 0, .55);
+}
+
+.fate-transition.is-hit .fate-outcome,
+.fate-transition.is-miss .fate-outcome {
+  animation: fate-outcome-in .48s ease both;
+}
+
+.fate-burst {
+  position: absolute;
+  z-index: 6;
+  left: 50%;
+  top: 53%;
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+}
+
+.fate-burst::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(255, 222, 123, .9);
+  border-radius: 50%;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(.2);
+}
+
+.fate-burst i {
+  --burst-x: 160px;
+  --burst-y: -130px;
+  position: absolute;
+  width: 11px;
+  height: 20px;
+  border-radius: 999px;
+  background: #f3c662;
+  opacity: 0;
+}
+
+.fate-burst i:nth-child(2n) { background: #f4825d; }
+.fate-burst i:nth-child(3n) { width: 15px; height: 15px; background: #fff4c8; transform: rotate(45deg); }
+.fate-burst i:nth-child(1) { --burst-x: -205px; --burst-y: -120px; }
+.fate-burst i:nth-child(2) { --burst-x: -148px; --burst-y: -190px; }
+.fate-burst i:nth-child(3) { --burst-x: -58px; --burst-y: -220px; }
+.fate-burst i:nth-child(4) { --burst-x: 60px; --burst-y: -215px; }
+.fate-burst i:nth-child(5) { --burst-x: 155px; --burst-y: -176px; }
+.fate-burst i:nth-child(6) { --burst-x: 216px; --burst-y: -102px; }
+.fate-burst i:nth-child(7) { --burst-x: 228px; --burst-y: 14px; }
+.fate-burst i:nth-child(8) { --burst-x: 170px; --burst-y: 110px; }
+.fate-burst i:nth-child(9) { --burst-x: 69px; --burst-y: 156px; }
+.fate-burst i:nth-child(10) { --burst-x: -65px; --burst-y: 154px; }
+.fate-burst i:nth-child(11) { --burst-x: -170px; --burst-y: 105px; }
+.fate-burst i:nth-child(12) { --burst-x: -224px; --burst-y: 10px; }
+
+.fate-transition.is-hit .fate-burst::before {
+  animation: fate-ring-burst .8s ease-out both;
+}
+
+.fate-transition.is-hit .fate-burst i {
+  animation: fate-particle-burst 1.05s cubic-bezier(.14, .7, .2, 1) both;
+}
+
+.fate-transition.is-hit .fate-burst i:nth-child(2n) { animation-delay: .04s; }
+.fate-transition.is-hit .fate-burst i:nth-child(3n) { animation-delay: .08s; }
+
+.fate-escape-cats {
+  position: absolute;
+  z-index: 7;
+  inset: 0;
+  pointer-events: none;
+}
+
+.fate-escape-cat {
+  position: absolute;
+  top: 49%;
+  width: clamp(150px, 24vw, 250px);
+  height: auto;
+  max-width: none;
+  object-fit: contain;
+  opacity: 0;
+  filter: drop-shadow(0 18px 20px rgba(0, 0, 0, .34));
+  will-change: transform, opacity;
+}
+
+.fate-escape-dazuo {
+  left: 0;
+  transform: translate(-115%, -35%) rotate(8deg);
+}
+
+.fate-escape-laba {
+  right: 0;
+  transform: translate(115%, -35%) rotate(-8deg);
+}
+
+.fate-transition.is-miss .fate-escape-dazuo {
+  animation: fate-dazuo-escape 1.45s cubic-bezier(.22, .75, .22, 1) both;
+}
+
+.fate-transition.is-miss .fate-escape-laba {
+  animation: fate-laba-escape 1.45s .08s cubic-bezier(.22, .75, .22, 1) both;
+}
+
+.fate-paw-trail {
+  position: absolute;
+  top: 67%;
+  color: rgba(255, 220, 149, .72);
+  font-size: 22px;
+  opacity: 0;
+  white-space: nowrap;
+}
+
+.fate-paw-trail-left { left: 10%; transform: rotate(-8deg); }
+.fate-paw-trail-right { right: 10%; transform: rotate(8deg) scaleX(-1); }
+
+.fate-transition.is-miss .fate-paw-trail {
+  animation: fate-paw-fade 1.15s .32s ease both;
+}
+
+@keyframes fate-copy-in {
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fate-ambient-pulse {
+  0%, 100% { opacity: .42; transform: translate(-50%, -50%) scale(.92); }
+  50% { opacity: .7; transform: translate(-50%, -50%) scale(1.08); }
+}
+
+@keyframes fate-dice-arrive {
+  0% { opacity: 0; transform: translate(155px, -210px) scale(.55) rotate(18deg); }
+  18% { opacity: 1; }
+  58% { transform: translate(-22px, 18px) scale(1.06) rotate(-6deg); }
+  72% { transform: translate(12px, -20px) scale(.98) rotate(3deg); }
+  88% { transform: translate(-5px, 3px) scale(1.02) rotate(-1deg); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes fate-dice-spin {
+  0% { transform: rotateX(-40deg) rotateY(20deg) rotateZ(12deg); }
+  35% { transform: rotateX(520deg) rotateY(-460deg) rotateZ(185deg); }
+  68% { transform: rotateX(830deg) rotateY(-765deg) rotateZ(310deg); }
+  100% { transform: rotateX(1058deg) rotateY(-1044deg) rotateZ(360deg); }
+}
+
+@keyframes fate-shadow-roll {
+  0% { opacity: 0; transform: translateX(110px) scale(.25); }
+  45% { opacity: .28; transform: translateX(-70px) scale(.65); }
+  72% { opacity: .46; transform: translateX(-40%) scale(1); }
+  100% { opacity: .5; transform: translateX(-50%) scale(.86); }
+}
+
+@keyframes fate-dice-reveal {
+  0% { transform: rotateX(1058deg) rotateY(-1044deg) rotateZ(360deg) scale(1); }
+  55% { transform: rotateX(1080deg) rotateY(-1080deg) rotateZ(360deg) scale(1.14); }
+  100% { transform: rotateX(1080deg) rotateY(-1080deg) rotateZ(360deg) scale(1); }
+}
+
+@keyframes fate-outcome-in {
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fate-ring-burst {
+  0% { opacity: .9; transform: translate(-50%, -50%) scale(.2); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(15); }
+}
+
+@keyframes fate-particle-burst {
+  0% { opacity: 0; transform: translate(0, 0) rotate(0deg) scale(.3); }
+  12% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--burst-x), var(--burst-y)) rotate(420deg) scale(1); }
+}
+
+@keyframes fate-dazuo-escape {
+  0% { opacity: 0; transform: translate(-115%, -35%) rotate(8deg); }
+  24% { opacity: 1; transform: translate(4%, -35%) rotate(-3deg); }
+  48% { opacity: 1; transform: translate(11%, -35%) rotate(2deg); }
+  100% { opacity: 0; transform: translate(-155%, -17%) rotate(-16deg) scale(.72); }
+}
+
+@keyframes fate-laba-escape {
+  0% { opacity: 0; transform: translate(115%, -35%) rotate(-8deg); }
+  24% { opacity: 1; transform: translate(-4%, -35%) rotate(3deg); }
+  48% { opacity: 1; transform: translate(-11%, -35%) rotate(-2deg); }
+  100% { opacity: 0; transform: translate(155%, -17%) rotate(16deg) scale(.72); }
+}
+
+@keyframes fate-paw-fade {
+  0% { opacity: 0; }
+  28%, 66% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(20px) rotate(-4deg); }
+}
+
+@media (max-width: 640px) {
+  .fate-transition-stage {
+    width: 100%;
+    min-height: 100dvh;
+    padding: max(48px, env(safe-area-inset-top)) 18px max(34px, env(safe-area-inset-bottom));
+  }
+
+  .fate-copy { width: min(92vw, 430px); }
+  .fate-kicker { font-size: 16px; letter-spacing: .1em; }
+  .fate-copy h2 { margin-top: 8px; font-size: clamp(24px, 7vw, 32px); }
+  .fate-dice-scene { width: 122px; height: 150px; margin-top: 12px; }
+  .fate-dice { width: 78px; height: 78px; }
+  .fate-dice-face { padding: 11px; border-radius: 16px; }
+  .fate-dice-face i { width: 11px; height: 11px; }
+  .fate-dice-front { transform: translateZ(39px); }
+  .fate-dice-back { transform: rotateY(180deg) translateZ(39px); }
+  .fate-dice-right { transform: rotateY(90deg) translateZ(39px); }
+  .fate-dice-left { transform: rotateY(-90deg) translateZ(39px); }
+  .fate-dice-top { transform: rotateX(90deg) translateZ(39px); }
+  .fate-dice-bottom { transform: rotateX(-90deg) translateZ(39px); }
+  .fate-dice-shadow { bottom: 13px; width: 84px; }
+  .fate-outcome { width: min(92vw, 430px); min-height: 60px; font-size: 22px; }
+  .fate-escape-cat { top: 52%; width: clamp(132px, 44vw, 190px); }
+  .fate-escape-dazuo { left: 3%; }
+  .fate-escape-laba { right: 3%; }
+  .fate-paw-trail { top: 70%; font-size: 17px; }
+  .fate-paw-trail-left { left: 3%; }
+  .fate-paw-trail-right { right: 3%; }
+  .fate-burst i:nth-child(1) { --burst-x: -42vw; }
+  .fate-burst i:nth-child(6) { --burst-x: 42vw; }
+  .fate-burst i:nth-child(7) { --burst-x: 43vw; }
+  .fate-burst i:nth-child(12) { --burst-x: -43vw; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fate-transition *,
+  .fate-transition *::before,
+  .fate-transition *::after {
+    animation-duration: .01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  .fate-transition.is-active .fate-kicker,
+  .fate-transition.is-active .fate-copy h2,
+  .fate-transition.is-rolling .fate-dice-scene {
+    opacity: 1;
+    transform: none;
+  }
+}
+
