@@ -61,7 +61,7 @@ def save_variant(image: Image.Image, destination: Path, width: int) -> tuple[int
     prepared.save(
         destination,
         "WEBP",
-        quality=86,
+        quality=80,
         method=6,
         exact=has_alpha,
     )

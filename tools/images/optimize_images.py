@@ -52,9 +52,9 @@ def save_optimized(image: Image.Image, target: Path, *, long_edge: int) -> None:
             else:
                 background.paste(image)
             image = background
-        image.save(target, "JPEG", quality=86, optimize=True, progressive=True)
+        image.save(target, "JPEG", quality=80, optimize=True, progressive=True)
     elif suffix == ".webp":
-        image.save(target, "WEBP", quality=86, method=6)
+        image.save(target, "WEBP", quality=80, method=6)
     elif suffix == ".png":
         image.save(target, "PNG", optimize=True, compress_level=9)
     else:
@@ -80,7 +80,7 @@ def referenced_images() -> list[Path]:
 
 def optimize_in_place(path: Path) -> tuple[int, int]:
     before = path.stat().st_size
-    if before < 700 * 1024 or path.name in SKIP_NAMES:
+    if before < 200 * 1024 or path.name in SKIP_NAMES:
         return before, before
 
     suffix = path.suffix.lower()

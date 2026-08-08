@@ -289,12 +289,17 @@
     blocks.forEach(function (block) {
       if (block.image) {
         var image = document.createElement("img");
-        image.src = block.image;
+        var storyAsset = getImageAsset(block.image);
+        image.src = storyAsset.src;
+        if (storyAsset.srcset) {
+          image.srcset = storyAsset.srcset;
+          image.sizes = "(max-width: 760px) 92vw, 620px";
+        }
         image.loading = "lazy";
         image.decoding = "async";
         image.alt = cat.name + "的猫咪小传配图";
-        image.width = block.width;
-        image.height = block.height;
+        image.width = storyAsset.width || block.width;
+        image.height = storyAsset.height || block.height;
         container.appendChild(image);
         return;
       }
