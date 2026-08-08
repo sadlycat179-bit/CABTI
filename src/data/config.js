@@ -13,7 +13,7 @@ window.CATBTI_CONFIG = {
     galleryButton: "查看全部猫咪",
     resultEyebrow: "你的 CATBTI 测试结果",
     yourCatLabel: "你其实是......!",
-    claimNotice: "欢迎凭此页面至摊位领取猫格卡",
+    claimNotice: "欢迎凭此页面至摊位领取相卡",
     retryButton: "重新测试",
     galleryEyebrow: "CATBTI CAT ATLAS",
     galleryTitle: "认识全部 16 只校园猫",
@@ -242,7 +242,7 @@ window.CATBTI_CONFIG = {
       name: "乌云",
       title: "吞噬者",
       traits: { attitude: "friendly", action: "observer", area: "roam", pursuit: "food" },
-      images: ["assets/images/cats/gallery/wuyun.jpg"],
+      images: ["assets/images/cats/gallery/wuyun.jpg", "assets/images/cats/gallery/wuyun-new.jpg"],
       storyBlocks: [
         { text: "相比其他校园猫，认识乌云的人并不多。它常常出现在二教附近的草丛里，那一带的小猫都比较胆小，只有乌云较为亲人，确切地说，比较亲猫粮。据饲养员称，因为特别着急吃，以至于人都来不及怕了。" },
         { text: "所以乌云的个头也比周边其他瘦猫大好几圈。好心的女学生给它们买的防蚂蚁护城河版猫碗，乌云的头刚好能把碗口堵住。在草丛前摇猫粮时，你也会看到一只黑色巨物缓缓开出，被这样一颗浑圆的大黑球蹭也别有一番风味。" },

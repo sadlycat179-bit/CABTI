@@ -179,7 +179,7 @@
     portrait.classList.toggle("has-pending-photo", images.length === 0);
     track.scrollLeft = 0;
     updatePhotoPagination(0);
-    if (images.length > 1) preloadNearbyResultPhotos(0);
+    if (images.length) preloadNearbyResultPhotos(0);
   }
 
   function completeReceiptPrint(scene, resultView) {
