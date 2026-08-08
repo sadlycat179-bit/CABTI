@@ -646,7 +646,7 @@ body[data-view="result"] { color: #57463d; background: #f7d9a1; font-family: "Mi
 
 .perfect-ending-card {
   width: min(860px, 100%);
-  margin: -16px auto 42px;
+  margin: 20px auto 42px;
   padding: 18px 22px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 180px;
@@ -870,7 +870,7 @@ body[data-view="result"] { color: #57463d; background: #f7d9a1; font-family: "Mi
   }
   .claim-card h3 { font-size: 21px; }
   .claim-card .result-barcode { width: min(100%, 320px); }
-  .perfect-ending-card { grid-template-columns: minmax(0, 1fr) 126px; gap: 12px; margin-top: -20px; padding: 15px 12px; }
+  .perfect-ending-card { grid-template-columns: minmax(0, 1fr) 126px; gap: 12px; margin-top: 18px; padding: 15px 12px; }
   .perfect-ending-card h3 { font-size: 18px; }
   .perfect-ending-card p { font-size: 13px; }
   .perfect-ending-qr-wrap { padding: 5px; }
