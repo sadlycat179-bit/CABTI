@@ -663,10 +663,10 @@ body[data-view="result"] { color: #57463d; background: #f7d9a1; font-family: "Mi
 .perfect-ending-copy::before { content: "✦"; position: absolute; left: -7px; top: -8px; color: #e77d5a; font-size: 20px; }
 .perfect-ending-kicker { display: block; margin-bottom: 6px; color: #7b8b5a; font: 900 10px/1.2 "Arial Black", Arial, sans-serif; letter-spacing: .12em; }
 .perfect-ending-card h3 { margin: 0; color: #d56647; font-size: clamp(19px, 2.2vw, 27px); line-height: 1.35; }
+.perfect-ending-title-line { display: block; }
 .perfect-ending-card p { margin: 8px 0 0; color: #806d61; font-size: 14px; line-height: 1.7; }
 .perfect-ending-qr-wrap { display: grid; justify-items: center; gap: 5px; padding: 8px; border: 2px solid #57463d; border-radius: 12px; background: #fff; transform: rotate(-2deg); }
 .perfect-ending-qr-wrap img { display: block; width: 150px; height: 150px; object-fit: contain; image-rendering: auto; }
-.perfect-ending-qr-wrap span { color: #d56647; font-size: 11px; font-weight: 900; }
 
 .community-panel {
   width: 100%;
@@ -858,6 +858,7 @@ body[data-view="result"] { color: #57463d; background: #f7d9a1; font-family: "Mi
   font-weight: 700;
   line-height: 1.9;
 }
+.community-thanks p span { display: block; }
 
 @media (max-width: 760px) {
   .claim-card {

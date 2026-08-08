@@ -338,6 +338,14 @@
     "sourceBytes": 2061856,
     "optimizedBytes": 350870
   },
+  "assets/images/cover/cover.png": {
+    "src": "assets/images/generated/cover/cover-png-640.webp",
+    "srcset": "assets/images/generated/cover/cover-png-320.webp 320w, assets/images/generated/cover/cover-png-640.webp 640w",
+    "width": 640,
+    "height": 640,
+    "sourceBytes": 390249,
+    "optimizedBytes": 60622
+  },
   "assets/images/guides/danhuang-guide-cutout.png": {
     "src": "assets/images/generated/guides/danhuang-guide-cutout-png-1200.webp",
     "srcset": "assets/images/generated/guides/danhuang-guide-cutout-png-320.webp 320w, assets/images/generated/guides/danhuang-guide-cutout-png-720.webp 720w, assets/images/generated/guides/danhuang-guide-cutout-png-1200.webp 1200w",
