@@ -196,6 +196,18 @@
   .community-panel .community-thanks p { font-size: 14px; }
 }
 
+.result-extra-cards {
+  width: min(720px, calc(100% - 40px));
+  margin: 42px auto 0;
+  display: grid;
+  gap: 0;
+}
+.result-extra-cards .result-group-invite,
+.result-extra-cards .perfect-ending-card {
+  width: 100%;
+  margin: 0;
+}
+.result-extra-cards .perfect-ending-card { margin-top: 28px; }
 .result-group-invite {
   width: min(720px, calc(100% - 40px));
   margin: 42px auto 0;
@@ -234,6 +246,7 @@
 .account-card figcaption { flex-wrap: wrap; }
 
 @media (max-width: 760px) {
+  .result-extra-cards { width: calc(100% - 28px); margin-top: 34px; gap: 0; }
   .result-group-invite {
     width: calc(100% - 28px);
     margin-top: 34px;
@@ -245,6 +258,7 @@
   .result-group-invite h3 { font-size: 17px; line-height: 1.7; }
   .result-group-invite strong { font-size: 24px; }
   .result-group-invite + .community-panel { margin-top: 44px; }
+  .result-extra-cards .perfect-ending-card { margin-top: 24px; }
   .account-note { margin-top: 2px; font-size: 12px; }
 }
 
