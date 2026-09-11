@@ -114,6 +114,11 @@
     var settings = typeof options === "string" ? { priority: options } : (options || {});
     var promise = enqueue(function () {
       image.dataset.imageLoadState = "loading";
+      // This queue already decides when to load. Native lazy loading can leave
+      // offscreen images waiting forever and occupy every queue slot.
+      image.loading = "eager";
+      image.decoding = "async";
+      image.fetchPriority = settings.priority === "high" ? "high" : "low";
       assignImageSource(image, source, settings.sizes);
       image.removeAttribute("data-src");
       return decodeImage(image).then(function (loaded) {

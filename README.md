@@ -5,6 +5,14 @@
 
 ## 快速使用
 
+### GitHub Pages 部署
+
+仓库包含 `.github/workflows/pages.yml`，使用 Node.js 24 检查脚本与匹配规则，
+并使用支持 Node.js 24 的 Actions 打包、部署静态文件。
+首次切换时，在仓库 Settings → Pages → Build and deployment 中将 Source
+设为 GitHub Actions；随后向 `main` 推送或手动运行该工作流。
+这是替换 GitHub 自动生成的旧 Pages 构建流程，网页本身不需要 Node.js 服务器。
+
 直接双击 `index.html` 即可打开。也可以启动任意静态文件服务器后访问项目根目录。
 
 常用测试地址：
